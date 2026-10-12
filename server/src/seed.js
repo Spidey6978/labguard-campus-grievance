@@ -18,11 +18,11 @@ export async function seedData() {
 
     // 1. Create Users
     const student = await User.create({
-      name: 'Rahul Sharma',
-      email: 'rahul@sfit.ac.in',
+      name: 'Veer',
+      email: 'veer@sfit.ac.in',
       password: 'student123',
       role: 'student',
-      usn: 'PID-221089',
+      usn: 'PID-241034',
       college: 'St. Francis Institute of Technology (SFIT), Mumbai',
       department: 'Information Technology (INFT)',
       phone: '+91 98840 12345',
@@ -166,7 +166,7 @@ export async function seedData() {
       timeline: [
         {
           status: 'Reported',
-          note: 'Incident reported by Rahul Sharma (PID-221089) during INFT Lab Batch 2.',
+          note: 'Incident reported by Veer (PID-241034) during INFT Lab Batch 2.',
           updatedBy: student._id,
           timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
         },

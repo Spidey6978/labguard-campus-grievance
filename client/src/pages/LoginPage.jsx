@@ -97,7 +97,7 @@ export default function LoginPage({ setTab }) {
               className="btn-secondary"
               style={{ width: '100%', justifyContent: 'space-between', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}
             >
-              <span>Student (Rahul &bull; PID-221089)</span>
+              <span>Student (Veer &bull; PID-241034)</span>
               <span style={{ color: '#0369a1', fontWeight: 600 }}>Login &rarr;</span>
             </button>
 
@@ -151,7 +151,7 @@ export default function LoginPage({ setTab }) {
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder="e.g. Veer"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -163,7 +163,7 @@ export default function LoginPage({ setTab }) {
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. 221089 (PID)"
+                  placeholder="e.g. 241034 (PID)"
                   value={usn}
                   onChange={(e) => setUsn(e.target.value.toUpperCase())}
                   style={{ textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}

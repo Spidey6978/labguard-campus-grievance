@@ -25,7 +25,7 @@ In engineering colleges, computer labs, embedded workshops, and smart seminar ha
 
 | Role | Name | Email | Password | Details |
 | :--- | :--- | :--- | :--- | :--- |
-| **🎓 Student (Reporter)** | Rahul Sharma | `rahul@sfit.ac.in` | `student123` | PID: `221089` &bull; Report faults & track tickets |
+| **🎓 Student (Reporter)** | Veer | `veer@sfit.ac.in` | `student123` | PID: `241034` &bull; Report faults & track tickets |
 | **🔧 Lab Technician** | Ramesh Kumar | `ramesh.tech@sfit.ac.in` | `tech123` | Hardware Desk &bull; Triage queue & log replaced parts |
 | **👔 HOD / Faculty Admin** | Dr. S. N. Sharma | `hod.inft@sfit.ac.in` | `admin123` | Central Admin &bull; MTTR SLA analytics & CSV exports |
 

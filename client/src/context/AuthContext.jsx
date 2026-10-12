@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
     } else if (role === 'technician') {
       return await login('ramesh.tech@sfit.ac.in', 'tech123');
     } else {
-      return await login('rahul@sfit.ac.in', 'student123');
+      return await login('veer@sfit.ac.in', 'student123');
     }
   };
 
