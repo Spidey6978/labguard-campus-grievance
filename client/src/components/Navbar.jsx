@@ -19,8 +19,8 @@ export default function Navbar({ currentTab, setTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
+        backgroundColor: '#0f172a',
+        borderBottom: '1px solid #1e293b',
       }}
     >
       <div
@@ -48,11 +48,12 @@ export default function Navbar({ currentTab, setTab }) {
               width: '24px',
               height: '24px',
               borderRadius: '4px',
-              background: '#0f172a',
+              background: '#1e293b',
+              border: '1px solid #334155',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#ffffff',
+              color: '#f8fafc',
             }}
           >
             <Terminal size={14} />
@@ -64,7 +65,7 @@ export default function Navbar({ currentTab, setTab }) {
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.88rem',
                 fontWeight: 700,
-                color: '#0f172a',
+                color: '#f8fafc',
               }}
             >
               sfit-labguard
@@ -75,9 +76,9 @@ export default function Navbar({ currentTab, setTab }) {
                 fontFamily: 'var(--font-mono)',
                 padding: '0.05rem 0.35rem',
                 borderRadius: '4px',
-                background: '#f1f5f9',
-                color: '#64748b',
-                border: '1px solid #e2e8f0',
+                background: '#1e293b',
+                color: '#94a3b8',
+                border: '1px solid #334155',
               }}
             >
               INFT
@@ -86,17 +87,17 @@ export default function Navbar({ currentTab, setTab }) {
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <button
             onClick={() => setTab('home')}
             style={{
               padding: '0.3rem 0.65rem',
               borderRadius: '5px',
-              background: currentTab === 'home' ? '#f1f5f9' : 'transparent',
-              color: currentTab === 'home' ? '#0f172a' : '#64748b',
+              background: currentTab === 'home' ? '#1e293b' : 'transparent',
+              color: currentTab === 'home' ? '#f8fafc' : '#94a3b8',
               fontWeight: currentTab === 'home' ? 600 : 500,
               fontSize: '0.82rem',
-              border: currentTab === 'home' ? '1px solid #e2e8f0' : '1px solid transparent',
+              border: currentTab === 'home' ? '1px solid #334155' : '1px solid transparent',
             }}
           >
             Workbench
@@ -107,14 +108,14 @@ export default function Navbar({ currentTab, setTab }) {
             style={{
               padding: '0.3rem 0.65rem',
               borderRadius: '5px',
-              background: currentTab === 'report' ? '#fee2e2' : 'transparent',
-              color: currentTab === 'report' ? '#b91c1c' : '#64748b',
+              background: currentTab === 'report' ? '#3f1515' : 'transparent',
+              color: currentTab === 'report' ? '#fca5a5' : '#f87171',
               fontWeight: currentTab === 'report' ? 600 : 500,
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.3rem',
-              border: currentTab === 'report' ? '1px solid #fecaca' : '1px solid transparent',
+              border: currentTab === 'report' ? '1px solid #7f1d1d' : '1px solid transparent',
             }}
           >
             <AlertCircle size={13} />
@@ -126,14 +127,14 @@ export default function Navbar({ currentTab, setTab }) {
             style={{
               padding: '0.3rem 0.65rem',
               borderRadius: '5px',
-              background: currentTab === 'assets' ? '#f1f5f9' : 'transparent',
-              color: currentTab === 'assets' ? '#0f172a' : '#64748b',
+              background: currentTab === 'assets' ? '#1e293b' : 'transparent',
+              color: currentTab === 'assets' ? '#f8fafc' : '#94a3b8',
               fontWeight: currentTab === 'assets' ? 600 : 500,
               fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.3rem',
-              border: currentTab === 'assets' ? '1px solid #e2e8f0' : '1px solid transparent',
+              border: currentTab === 'assets' ? '1px solid #334155' : '1px solid transparent',
             }}
           >
             <Cpu size={13} />
@@ -146,14 +147,14 @@ export default function Navbar({ currentTab, setTab }) {
               style={{
                 padding: '0.3rem 0.65rem',
                 borderRadius: '5px',
-                background: currentTab === 'my-tickets' ? '#f1f5f9' : 'transparent',
-                color: currentTab === 'my-tickets' ? '#0f172a' : '#64748b',
+                background: currentTab === 'my-tickets' ? '#1e293b' : 'transparent',
+                color: currentTab === 'my-tickets' ? '#f8fafc' : '#94a3b8',
                 fontWeight: currentTab === 'my-tickets' ? 600 : 500,
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                border: currentTab === 'my-tickets' ? '1px solid #e2e8f0' : '1px solid transparent',
+                border: currentTab === 'my-tickets' ? '1px solid #334155' : '1px solid transparent',
               }}
             >
               <Inbox size={13} />
@@ -167,14 +168,14 @@ export default function Navbar({ currentTab, setTab }) {
               style={{
                 padding: '0.3rem 0.65rem',
                 borderRadius: '5px',
-                background: currentTab === 'triage' ? '#fef3c7' : 'transparent',
-                color: currentTab === 'triage' ? '#b45309' : '#64748b',
+                background: currentTab === 'triage' ? '#451a03' : 'transparent',
+                color: currentTab === 'triage' ? '#fde68a' : '#fbbf24',
                 fontWeight: currentTab === 'triage' ? 600 : 500,
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                border: currentTab === 'triage' ? '1px solid #fde68a' : '1px solid transparent',
+                border: currentTab === 'triage' ? '1px solid #78350f' : '1px solid transparent',
               }}
             >
               <Wrench size={13} />
@@ -188,14 +189,14 @@ export default function Navbar({ currentTab, setTab }) {
               style={{
                 padding: '0.3rem 0.65rem',
                 borderRadius: '5px',
-                background: currentTab === 'analytics' ? '#f3e8ff' : 'transparent',
-                color: currentTab === 'analytics' ? '#7e22ce' : '#64748b',
+                background: currentTab === 'analytics' ? '#3b0764' : 'transparent',
+                color: currentTab === 'analytics' ? '#e9d5ff' : '#c084fc',
                 fontWeight: currentTab === 'analytics' ? 600 : 500,
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.3rem',
-                border: currentTab === 'analytics' ? '1px solid #e9d5ff' : '1px solid transparent',
+                border: currentTab === 'analytics' ? '1px solid #581c87' : '1px solid transparent',
               }}
             >
               <BarChart3 size={13} />
@@ -214,11 +215,11 @@ export default function Navbar({ currentTab, setTab }) {
                   alignItems: 'center',
                   gap: '0.3rem',
                   fontSize: '0.78rem',
-                  color: '#334155',
+                  color: '#e2e8f0',
                   padding: '0.2rem 0.5rem',
-                  background: '#f1f5f9',
+                  background: '#1e293b',
                   borderRadius: '4px',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid #334155',
                 }}
               >
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
@@ -228,7 +229,7 @@ export default function Navbar({ currentTab, setTab }) {
                   style={{
                     fontSize: '0.68rem',
                     fontFamily: 'var(--font-mono)',
-                    color: isAdmin ? '#7e22ce' : user.role === 'technician' ? '#b45309' : '#0369a1',
+                    color: isAdmin ? '#c084fc' : user.role === 'technician' ? '#fbbf24' : '#38bdf8',
                   }}
                 >
                   [{user.role}]
@@ -240,9 +241,9 @@ export default function Navbar({ currentTab, setTab }) {
                 value={user.role}
                 onChange={(e) => quickLogin(e.target.value)}
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  color: '#475569',
+                  background: '#1e293b',
+                  border: '1px solid #475569',
+                  color: '#f1f5f9',
                   fontSize: '0.74rem',
                   padding: '0.22rem 0.4rem',
                   borderRadius: '4px',
@@ -275,22 +276,43 @@ export default function Navbar({ currentTab, setTab }) {
             <div style={{ display: 'flex', gap: '0.3rem' }}>
               <button
                 onClick={() => quickLogin('student')}
-                className="btn-secondary"
-                style={{ fontSize: '0.76rem', padding: '0.25rem 0.55rem' }}
+                style={{
+                  background: '#1e293b',
+                  border: '1px solid #334155',
+                  color: '#e2e8f0',
+                  fontSize: '0.76rem',
+                  padding: '0.25rem 0.55rem',
+                  borderRadius: '4px',
+                  fontFamily: 'var(--font-mono)',
+                }}
               >
                 Veer (Student)
               </button>
               <button
                 onClick={() => quickLogin('technician')}
-                className="btn-secondary"
-                style={{ fontSize: '0.76rem', padding: '0.25rem 0.55rem' }}
+                style={{
+                  background: '#1e293b',
+                  border: '1px solid #334155',
+                  color: '#e2e8f0',
+                  fontSize: '0.76rem',
+                  padding: '0.25rem 0.55rem',
+                  borderRadius: '4px',
+                  fontFamily: 'var(--font-mono)',
+                }}
               >
                 Tech
               </button>
               <button
                 onClick={() => setTab('login')}
-                className="btn-primary"
-                style={{ fontSize: '0.76rem', padding: '0.25rem 0.65rem' }}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #ffffff',
+                  color: '#0f172a',
+                  fontSize: '0.76rem',
+                  padding: '0.25rem 0.65rem',
+                  borderRadius: '4px',
+                  fontWeight: 600,
+                }}
               >
                 Sign In
               </button>
