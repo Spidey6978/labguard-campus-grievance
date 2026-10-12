@@ -39,7 +39,7 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
           }}
         >
           <Sparkles size={14} />
-          St. Francis Institute of Technology (SFIT) &bull; Department of Computer Engineering
+          St. Francis Institute of Technology (SFIT) &bull; Department of Information Technology
         </div>
 
         <h1
