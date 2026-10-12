@@ -24,10 +24,10 @@ router.post('/register', async (req, res) => {
       email,
       password,
       usn: usn ? usn.toUpperCase() : '',
-      college: college || 'Dayananda Sagar College of Engineering',
-      department: department || 'Computer Science & Engineering',
+      college: college || 'St. Francis Institute of Technology (SFIT), Mumbai',
+      department: department || 'Computer Engineering',
       phone: phone || '',
-      role: role && ['organizer', 'student'].includes(role) ? role : 'student',
+      role: role && ['technician', 'admin', 'student'].includes(role) ? role : 'student',
     });
 
     const token = generateToken(user._id);

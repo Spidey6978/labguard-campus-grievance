@@ -1,7 +1,7 @@
 {
-  "name": "mosaic-pass-server",
-  "version": "1.0.0",
-  "description": "Backend API for Mosaic 2026 Event Accreditation & Verification Portal",
+  "name": "labguard-server",
+  "version": "2.0.0",
+  "description": "Backend API for LabGuard Institutional Equipment Grievance SLA Desk (SFIT Mumbai)",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

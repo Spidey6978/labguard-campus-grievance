@@ -85,7 +85,7 @@ export default function Navbar({ currentTab, setTab }) {
                   fontWeight: 700,
                 }}
               >
-                DSCE
+                SFIT
               </span>
             </div>
             <div

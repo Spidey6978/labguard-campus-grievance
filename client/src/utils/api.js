@@ -1,7 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export async function apiRequest(endpoint, options = {}) {
-  const token = localStorage.getItem('mosaic_token');
+  const token = localStorage.getItem('labguard_token') || localStorage.getItem('mosaic_token');
 
   const headers = {
     'Content-Type': 'application/json',

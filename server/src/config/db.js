@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 let memoryServer = null;
 
 export async function connectDB() {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mosaic_pass';
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/labguard';
 
   try {
     // Attempt standard connection first (local mongod or Atlas URI)

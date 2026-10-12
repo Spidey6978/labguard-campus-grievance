@@ -184,7 +184,7 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
                 }}
               >
                 <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#475569', marginBottom: '0.35rem' }}>
-                  DSCE &bull; Department of CSE
+                  SFIT &bull; Department of Computer Engineering
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#090d16', marginBottom: '0.2rem' }}>
                   {qrModalAsset.assetTag}

@@ -39,7 +39,7 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
           }}
         >
           <Sparkles size={14} />
-          Dayananda Sagar College of Engineering &bull; Department of CSE
+          St. Francis Institute of Technology (SFIT) &bull; Department of Computer Engineering
         </div>
 
         <h1

@@ -30,12 +30,12 @@ const userSchema = new mongoose.Schema(
     college: {
       type: String,
       trim: true,
-      default: 'Dayananda Sagar College of Engineering',
+      default: 'St. Francis Institute of Technology (SFIT), Mumbai',
     },
     department: {
       type: String,
       trim: true,
-      default: 'Computer Science & Engineering',
+      default: 'Computer Engineering',
     },
     role: {
       type: String,

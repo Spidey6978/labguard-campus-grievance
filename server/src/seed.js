@@ -19,34 +19,34 @@ export async function seedData() {
     // 1. Create Users
     const student = await User.create({
       name: 'Rahul Sharma',
-      email: 'rahul@college.edu',
+      email: 'rahul@sfit.ac.in',
       password: 'student123',
       role: 'student',
-      usn: '1MS22CS089',
-      college: 'Dayananda Sagar College of Engineering',
-      department: 'Computer Science & Engineering',
+      usn: 'PID-221089',
+      college: 'St. Francis Institute of Technology (SFIT), Mumbai',
+      department: 'Computer Engineering (CMPN)',
       phone: '+91 98840 12345',
     });
 
     const technician = await User.create({
       name: 'Ramesh Kumar (Lab Tech)',
-      email: 'ramesh.tech@college.edu',
+      email: 'ramesh.tech@sfit.ac.in',
       password: 'tech123',
       role: 'technician',
-      usn: 'STAFF-TECH-04',
-      college: 'Dayananda Sagar College of Engineering',
-      department: 'Computer Science & Engineering',
+      usn: 'SFIT-TECH-04',
+      college: 'St. Francis Institute of Technology (SFIT), Mumbai',
+      department: 'Computer Engineering (CMPN)',
       phone: '+91 97720 98765',
     });
 
     const admin = await User.create({
       name: 'Dr. S. N. Sharma (HOD / Lab In-Charge)',
-      email: 'hod.cse@college.edu',
+      email: 'hod.cmpn@sfit.ac.in',
       password: 'admin123',
       role: 'admin',
-      usn: 'FACULTY-HOD-01',
-      college: 'Dayananda Sagar College of Engineering',
-      department: 'Computer Science & Engineering',
+      usn: 'SFIT-HOD-01',
+      college: 'St. Francis Institute of Technology (SFIT), Mumbai',
+      department: 'Computer Engineering (CMPN)',
       phone: '+91 99001 55443',
     });
 
@@ -166,7 +166,7 @@ export async function seedData() {
       timeline: [
         {
           status: 'Reported',
-          note: 'Incident reported by Rahul Sharma (1MS22CS089) during CS Lab Batch 2.',
+          note: 'Incident reported by Rahul Sharma (PID-221089) during CMPN Lab Batch 2.',
           updatedBy: student._id,
           timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
         },

@@ -1,7 +1,7 @@
 {
-  "name": "mosaic-fest-portal",
-  "version": "1.0.0",
-  "description": "Mosaic Tech Fest - Event Accreditation & Live Verification Desk (MERN Stack)",
+  "name": "labguard-campus-grievance",
+  "version": "2.0.0",
+  "description": "LabGuard - Institutional Lab Asset & Campus Equipment Grievance SLA Desk (SFIT Mumbai)",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.9.5"
   },
-  "keywords": ["mern", "mosaic", "event-management", "qr-verification"],
-  "author": "Mosaic Engineering Team",
+  "keywords": ["mern", "sfit", "labguard", "asset-management", "sla-grievance"],
+  "author": "SFIT Computer Engineering",
   "license": "MIT"
 }

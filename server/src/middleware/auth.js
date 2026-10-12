@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mosaic_super_secret_jwt_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'labguard_super_secret_jwt_key_2026';
 
 export const generateToken = (id) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });

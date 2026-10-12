@@ -25,7 +25,7 @@ export default function Footer() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.85rem' }}>
             <Cpu size={20} color="var(--accent-cyan)" />
             <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
-              LABGUARD &bull; DSCE
+              LABGUARD &bull; SFIT
             </span>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
@@ -67,11 +67,11 @@ export default function Footer() {
             Campus Division
           </h4>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6 }}>
-            Department of Computer Science &amp; Engineering
+            Department of Computer Engineering (CMPN)
             <br />
             Central Hardware Maintenance &amp; Systems Lab
             <br />
-            Dayananda Sagar College of Engineering, Bangalore
+            St. Francis Institute of Technology (SFIT), Borivali, Mumbai
           </p>
         </div>
       </div>

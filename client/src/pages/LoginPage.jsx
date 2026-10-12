@@ -12,7 +12,7 @@ export default function LoginPage({ setTab }) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [usn, setUsn] = useState('');
-  const [department, setDepartment] = useState('Computer Science & Engineering');
+  const [department, setDepartment] = useState('Computer Engineering (CMPN)');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ export default function LoginPage({ setTab }) {
           password,
           usn: usn.toUpperCase(),
           department,
-          college: 'Dayananda Sagar College of Engineering',
+          college: 'St. Francis Institute of Technology (SFIT), Mumbai',
           role: 'student',
         });
       } else {
@@ -81,7 +81,7 @@ export default function LoginPage({ setTab }) {
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.35rem' }}>
             {isRegistering
-              ? 'Register with college USN to file equipment grievances'
+              ? 'Register with college PID / Roll No to file equipment grievances'
               : 'Sign in to access fault reporting, triage workbench & SLA analytics'}
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function LoginPage({ setTab }) {
               className="btn-secondary"
               style={{ width: '100%', justifyContent: 'space-between', padding: '0.55rem 0.85rem', fontSize: '0.8rem' }}
             >
-              <span>🎓 Student (Rahul &bull; 1MS22CS089)</span>
+              <span>🎓 Student (Rahul &bull; PID-221089)</span>
               <span style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>1-Click Login &rarr;</span>
             </button>
 
@@ -186,11 +186,11 @@ export default function LoginPage({ setTab }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">USN / Roll Number</label>
+                <label className="form-label">PID / Roll Number</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. 1MS22CS089"
+                  placeholder="e.g. 221089 (PID)"
                   value={usn}
                   onChange={(e) => setUsn(e.target.value.toUpperCase())}
                   style={{ textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}
@@ -201,10 +201,11 @@ export default function LoginPage({ setTab }) {
               <div className="form-group">
                 <label className="form-label">Department</label>
                 <select className="form-select" value={department} onChange={(e) => setDepartment(e.target.value)}>
-                  <option value="Computer Science & Engineering">Computer Science & Engineering</option>
-                  <option value="Information Science & Engineering">Information Science & Engineering</option>
-                  <option value="Artificial Intelligence & Machine Learning">AI & Machine Learning</option>
-                  <option value="Electronics & Communication">Electronics & Communication</option>
+                  <option value="Computer Engineering (CMPN)">Computer Engineering (CMPN)</option>
+                  <option value="Information Technology (INFT)">Information Technology (INFT)</option>
+                  <option value="Artificial Intelligence & Data Science (AI&DS)">AI & Data Science (AI&DS)</option>
+                  <option value="Electronics & Telecommunication (EXTC)">Electronics & Telecommunication (EXTC)</option>
+                  <option value="Mechanical Engineering (MECH)">Mechanical Engineering (MECH)</option>
                 </select>
               </div>
             </>
@@ -217,7 +218,7 @@ export default function LoginPage({ setTab }) {
               <input
                 type="email"
                 className="form-input"
-                placeholder="name@college.edu"
+                placeholder="name@sfit.ac.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{ paddingLeft: '2.5rem', width: '100%' }}
