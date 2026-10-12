@@ -3,15 +3,27 @@ import {
   AlertCircle,
   Search,
   Cpu,
+  Clock,
+  Wrench,
+  CheckCircle2,
+  FileSpreadsheet,
+  AlertTriangle,
+  ArrowRight,
+  ShieldAlert,
+  BarChart3,
+  Layers,
 } from 'lucide-react';
 import { apiRequest } from '../utils/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function HomePage({ assets, setTab, onSelectAsset }) {
+  const { user, quickLogin } = useAuth();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [roomFilter, setRoomFilter] = useState('All');
   const [activeView, setActiveView] = useState('assets');
   const [tickets, setTickets] = useState([]);
+  const [loadingTickets, setLoadingTickets] = useState(true);
 
   useEffect(() => {
     async function fetchTickets() {
@@ -20,11 +32,39 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
         if (res.success) setTickets(res.data);
       } catch (err) {
         console.warn('Could not load tickets:', err);
+      } finally {
+        setLoadingTickets(false);
       }
     }
     fetchTickets();
   }, []);
 
+  const formatSlaRemaining = (deadline) => {
+    if (!deadline) return null;
+    const diff = new Date(deadline) - new Date();
+    if (diff <= 0) return { text: 'EXPIRED', urgent: true };
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { text: `${hours}h ${mins}m left`, urgent: hours < 12 };
+  };
+
+  // Student specific tickets (Veer • PID-241034)
+  const myTickets = user?.role === 'student'
+    ? tickets.filter(
+        (t) =>
+          t.reportedBy?._id === user?._id ||
+          t.reportedBy?.usn === user?.usn ||
+          t.reportedBy?.email === user?.email ||
+          t.reportedBy?.name?.toLowerCase().includes('veer')
+      )
+    : [];
+
+  // Urgent tickets for technician
+  const urgentTickets = tickets.filter(
+    (t) => t.status !== 'Resolved' && t.status !== 'Closed'
+  );
+
+  // Filtered Assets
   const filteredAssets = assets.filter((asset) => {
     const q = search.toLowerCase();
     const matchesSearch =
@@ -51,15 +91,895 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
   const totalIssues = assets.filter((a) => a.status !== 'Operational').length;
   const operationalCount = assets.filter((a) => a.status === 'Operational').length;
 
-  const formatSlaRemaining = (deadline) => {
-    if (!deadline) return null;
-    const diff = new Date(deadline) - new Date();
-    if (diff <= 0) return { text: 'EXPIRED', urgent: true };
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return { text: `${hours}h ${mins}m left`, urgent: hours < 12 };
+  // Direct CSV Export for HOD Admin
+  const handleExportCSV = () => {
+    try {
+      const headers = [
+        'Ticket ID',
+        'Asset Tag',
+        'Asset Name',
+        'Lab Room',
+        'Category',
+        'Priority',
+        'Status',
+        'Reported By',
+        'Reported At',
+        'Resolved At',
+        'Parts Replaced',
+      ];
+
+      const rows = tickets.map((t) => [
+        `"${t.ticketNumber || ''}"`,
+        `"${t.asset?.assetTag || ''}"`,
+        `"${t.asset?.name || ''}"`,
+        `"${t.asset?.labRoom || ''}"`,
+        `"${t.issueCategory || ''}"`,
+        `"${t.priority || ''}"`,
+        `"${t.status || ''}"`,
+        `"${t.reportedBy?.name || ''} (${t.reportedBy?.usn || ''})"`,
+        `"${t.createdAt ? new Date(t.createdAt).toLocaleString() : ''}"`,
+        `"${t.resolvedAt ? new Date(t.resolvedAt).toLocaleString() : ''}"`,
+        `"${t.partsReplaced || ''}"`,
+      ]);
+
+      const csvContent =
+        'data:text/csv;charset=utf-8,' +
+        [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute(
+        'download',
+        `SFIT_INFT_Lab_Audit_${new Date().toISOString().slice(0, 10)}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert('Failed to export CSV: ' + err.message);
+    }
   };
 
+  /* =====================================================================
+   * 1. STUDENT LANDING VIEW (Veer • PID-241034)
+   * ===================================================================== */
+  if (user?.role === 'student') {
+    return (
+      <div>
+        {/* Header Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                Student Workbench
+              </h1>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  padding: '0.1rem 0.45rem',
+                  borderRadius: '4px',
+                  background: '#e0f2fe',
+                  color: '#0369a1',
+                  fontWeight: 600,
+                }}
+              >
+                Veer &bull; PID-241034
+              </span>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
+              SFIT &bull; Department of Information Technology &bull; Practical Lab Portal
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button onClick={() => setTab('report')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
+              <AlertCircle size={14} />
+              <span>Report Fault on Bench</span>
+            </button>
+            <button onClick={() => setTab('my-tickets')} className="btn-secondary" style={{ fontSize: '0.8rem' }}>
+              <span>My Tickets ({myTickets.length})</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Section 1: My Active Grievances & Live Resolution Status */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.6rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Clock size={15} color="#0369a1" />
+              <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                My Filed Grievances &amp; Real-Time Resolution Status
+              </h2>
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+              {myTickets.length} active record{myTickets.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
+          {myTickets.length === 0 ? (
+            <div
+              className="tool-panel"
+              style={{
+                padding: '1.25rem',
+                textAlign: 'center',
+                background: '#ffffff',
+                border: '1px dashed #cbd5e1',
+              }}
+            >
+              <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                No active faults logged under PID-241034. Everything on your workstation is running smoothly!
+              </div>
+              <button
+                onClick={() => setTab('report')}
+                className="btn-secondary"
+                style={{ fontSize: '0.76rem', padding: '0.25rem 0.6rem' }}
+              >
+                + Log a Fault on a Bench
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {myTickets.map((t) => {
+                const sla = formatSlaRemaining(t.slaDeadline);
+                const latestNote = t.timeline?.[t.timeline.length - 1];
+
+                return (
+                  <div
+                    key={t._id}
+                    className="tool-panel"
+                    style={{
+                      padding: '1rem 1.15rem',
+                      background: '#ffffff',
+                      borderLeft: t.status === 'Resolved' ? '4px solid #16a34a' : '4px solid #d97706',
+                    }}
+                  >
+                    {/* Top ticket metadata row */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontWeight: 700,
+                            color: '#7e22ce',
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {t.ticketNumber}
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '0.74rem',
+                            padding: '0.1rem 0.4rem',
+                            borderRadius: '4px',
+                            background: '#f1f5f9',
+                            color: '#0369a1',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {t.asset?.assetTag || 'Lab Equipment'}
+                        </span>
+                        <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                          {t.asset?.labRoom || 'SFIT Lab'}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <span
+                          className={`badge ${
+                            t.status === 'Resolved'
+                              ? 'badge-green'
+                              : t.status === 'In-Progress'
+                              ? 'badge-amber'
+                              : 'badge-neutral'
+                          }`}
+                        >
+                          {t.status}
+                        </span>
+                        {sla && t.status !== 'Resolved' && (
+                          <span
+                            style={{
+                              fontSize: '0.72rem',
+                              fontFamily: 'var(--font-mono)',
+                              color: sla.urgent ? '#dc2626' : '#d97706',
+                              fontWeight: 600,
+                              background: sla.urgent ? '#fee2e2' : '#fef3c7',
+                              padding: '0.1rem 0.4rem',
+                              borderRadius: '4px',
+                            }}
+                          >
+                            ⏱ SLA: {sla.text}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Title & Description */}
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.9rem', marginBottom: '0.2rem' }}>
+                      {t.title}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '0.65rem' }}>
+                      {t.description}
+                    </div>
+
+                    {/* Live Technician Diagnostic & Parts Replaced Box */}
+                    {(latestNote?.note || t.partsReplaced) && (
+                      <div
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '6px',
+                          padding: '0.6rem 0.75rem',
+                          fontSize: '0.76rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.3rem',
+                        }}
+                      >
+                        {latestNote?.note && (
+                          <div style={{ display: 'flex', gap: '0.4rem', color: '#334155' }}>
+                            <span style={{ fontWeight: 600, color: '#0369a1' }}>Technician Field Log:</span>
+                            <span>{latestNote.note}</span>
+                          </div>
+                        )}
+                        {t.partsReplaced && (
+                          <div style={{ display: 'flex', gap: '0.4rem', color: '#334155' }}>
+                            <span style={{ fontWeight: 600, color: '#b45309' }}>Components Replaced:</span>
+                            <span style={{ fontFamily: 'var(--font-mono)' }}>{t.partsReplaced}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Section 2: Lab PC Registry (Check PC Status Before Sitting Down) */}
+        <div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.6rem',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Cpu size={15} color="#0f172a" />
+              <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                Lab Systems Availability (Check PC Health)
+              </h2>
+            </div>
+
+            {/* Quick Filters */}
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Find PC (e.g. CC3-PC-14)..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ fontSize: '0.78rem', padding: '0.25rem 0.55rem', width: '190px' }}
+              />
+              <select
+                className="form-select"
+                value={roomFilter}
+                onChange={(e) => setRoomFilter(e.target.value)}
+                style={{ fontSize: '0.78rem', padding: '0.25rem 0.45rem' }}
+              >
+                {rooms.map((rm) => (
+                  <option key={rm} value={rm}>
+                    {rm === 'All' ? 'All Labs' : rm}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '120px' }}>Workstation</th>
+                    <th>Specification</th>
+                    <th>Lab Room</th>
+                    <th style={{ width: '120px' }}>Current Status</th>
+                    <th style={{ textAlign: 'right', width: '90px' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAssets.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '1.25rem', color: '#64748b' }}>
+                        No workstations found.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredAssets.map((asset) => (
+                      <tr key={asset._id}>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#0369a1' }}>
+                          {asset.assetTag}
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{asset.name}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+                            {asset.specs}
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.78rem', color: '#334155' }}>{asset.labRoom}</td>
+                        <td>
+                          {asset.status === 'Operational' ? (
+                            <span className="badge badge-green">Operational</span>
+                          ) : asset.status === 'Degraded' ? (
+                            <span className="badge badge-amber">Degraded</span>
+                          ) : (
+                            <span className="badge badge-red">Under Repair</span>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            onClick={() => {
+                              onSelectAsset(asset);
+                              setTab('report');
+                            }}
+                            className="btn-secondary"
+                            style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}
+                          >
+                            Report Fault &rarr;
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* =====================================================================
+   * 2. TECHNICIAN LANDING VIEW (Ramesh Kumar • Hardware Desk)
+   * ===================================================================== */
+  if (user?.role === 'technician') {
+    return (
+      <div>
+        {/* Header Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                Hardware Triage &amp; SLA Priority Desk
+              </h1>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  padding: '0.1rem 0.45rem',
+                  borderRadius: '4px',
+                  background: '#fef3c7',
+                  color: '#b45309',
+                  fontWeight: 600,
+                }}
+              >
+                Ramesh Kumar &bull; SFIT-TECH-04
+              </span>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
+              SFIT INFT &bull; Active Workstation Repair &amp; Component Replacement Ledger
+            </div>
+          </div>
+
+          <button onClick={() => setTab('triage')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
+            <Wrench size={14} />
+            <span>Open Triage Workbench &rarr;</span>
+          </button>
+        </div>
+
+        {/* SLA Telemetry Metric Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '0.75rem',
+            marginBottom: '1.25rem',
+          }}
+        >
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Active Breaches / Critical</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>
+              {urgentTickets.filter((t) => t.priority === 'Critical').length}
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#dc2626', marginTop: '0.1rem' }}>
+              &lt; 24h SLA response mandated
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Benches In-Progress</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#d97706', marginTop: '0.2rem' }}>
+              {urgentTickets.filter((t) => t.status === 'In-Progress').length}
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.1rem' }}>
+              Diagnostics / Parts in testing
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Fleet Operational Health</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#16a34a', marginTop: '0.2rem' }}>
+              {operationalCount} / {assets.length}
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#16a34a', marginTop: '0.1rem' }}>
+              {Math.round((operationalCount / (assets.length || 1)) * 100)}% lab uptime
+            </div>
+          </div>
+        </div>
+
+        {/* Section: SLA Urgent Attention Queue */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.6rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <ShieldAlert size={15} color="#dc2626" />
+              <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                SLA Priority Attention Queue
+              </h2>
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+              {urgentTickets.length} pending ticket{urgentTickets.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
+          <div className="tool-panel" style={{ overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '110px' }}>Ticket #</th>
+                    <th style={{ width: '120px' }}>Workstation</th>
+                    <th>Reported Symptom</th>
+                    <th style={{ width: '100px' }}>Priority</th>
+                    <th style={{ width: '110px' }}>Status</th>
+                    <th style={{ width: '125px' }}>SLA Window</th>
+                    <th style={{ textAlign: 'right', width: '90px' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {urgentTickets.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
+                        No pending equipment tickets! All lab hardware certified operational.
+                      </td>
+                    </tr>
+                  ) : (
+                    urgentTickets.map((t) => {
+                      const sla = formatSlaRemaining(t.slaDeadline);
+                      return (
+                        <tr key={t._id}>
+                          <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#7e22ce' }}>
+                            {t.ticketNumber}
+                          </td>
+                          <td>
+                            <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#0369a1' }}>
+                              {t.asset?.assetTag || '-'}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                              {t.asset?.labRoom}
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600, color: '#0f172a' }}>{t.title}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                              {t.description?.slice(0, 65)}...
+                            </div>
+                          </td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                t.priority === 'Critical'
+                                  ? 'badge-red'
+                                  : t.priority === 'High'
+                                  ? 'badge-amber'
+                                  : 'badge-neutral'
+                              }`}
+                            >
+                              {t.priority}
+                            </span>
+                          </td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                t.status === 'In-Progress' ? 'badge-amber' : 'badge-neutral'
+                              }`}
+                            >
+                              {t.status}
+                            </span>
+                          </td>
+                          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>
+                            {sla ? (
+                              <span style={{ color: sla.urgent ? '#dc2626' : '#d97706', fontWeight: 600 }}>
+                                {sla.text}
+                              </span>
+                            ) : (
+                              <span style={{ color: '#94a3b8' }}>-</span>
+                            )}
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            <button
+                              onClick={() => setTab('triage')}
+                              className="btn-primary"
+                              style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                            >
+                              Triage &rarr;
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Equipment Fleet Breakdown */}
+        <div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.6rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Layers size={15} color="#0f172a" />
+              <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                Department Workstations (Hardware Health)
+              </h2>
+            </div>
+            <button
+              onClick={() => setTab('assets')}
+              className="btn-secondary"
+              style={{ fontSize: '0.74rem', padding: '0.2rem 0.5rem' }}
+            >
+              Full Registry &rarr;
+            </button>
+          </div>
+
+          <div className="tool-panel" style={{ overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '120px' }}>Tag</th>
+                    <th>System</th>
+                    <th>Room</th>
+                    <th style={{ width: '120px' }}>Status</th>
+                    <th style={{ textAlign: 'right', width: '90px' }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assets.slice(0, 5).map((asset) => (
+                    <tr key={asset._id}>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#0369a1' }}>
+                        {asset.assetTag}
+                      </td>
+                      <td style={{ fontWeight: 600, color: '#0f172a' }}>{asset.name}</td>
+                      <td style={{ fontSize: '0.78rem', color: '#334155' }}>{asset.labRoom}</td>
+                      <td>
+                        {asset.status === 'Operational' ? (
+                          <span className="badge badge-green">Operational</span>
+                        ) : asset.status === 'Degraded' ? (
+                          <span className="badge badge-amber">Degraded</span>
+                        ) : (
+                          <span className="badge badge-red">Under Repair</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          onClick={() => {
+                            onSelectAsset(asset);
+                            setTab('report');
+                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}
+                        >
+                          Log Issue
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* =====================================================================
+   * 3. HOD / ADMIN LANDING VIEW (Dr. S. N. Sharma)
+   * ===================================================================== */
+  if (user?.role === 'admin') {
+    return (
+      <div>
+        {/* Header Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                Department Telemetry &amp; Fleet Audit
+              </h1>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  padding: '0.1rem 0.45rem',
+                  borderRadius: '4px',
+                  background: '#f3e8ff',
+                  color: '#7e22ce',
+                  fontWeight: 600,
+                }}
+              >
+                Dr. S. N. Sharma &bull; HOD INFT
+              </span>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
+              SFIT &bull; NBA Criterion 4 &amp; NAAC Institutional Infrastructure Compliance Audit
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button
+              onClick={handleExportCSV}
+              className="btn-secondary"
+              style={{ fontSize: '0.8rem', background: '#f8fafc', borderColor: '#cbd5e1' }}
+            >
+              <FileSpreadsheet size={14} color="#15803d" />
+              <span>Export CSV Audit Log</span>
+            </button>
+            <button onClick={() => setTab('analytics')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
+              <BarChart3 size={14} />
+              <span>Full SLA Logs &rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Telemetry KPI Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '0.75rem',
+            marginBottom: '1.25rem',
+          }}
+        >
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Fleet Uptime</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#16a34a', marginTop: '0.2rem' }}>
+              94.2%
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#16a34a', marginTop: '0.1rem' }}>
+              Exceeds NBA &ge; 90% target
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Average MTTR</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0369a1', marginTop: '0.2rem' }}>
+              14.5 hrs
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.1rem' }}>
+              Mean Time to Resolution
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Total Monitored Fleet</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a', marginTop: '0.2rem' }}>
+              {assets.length} Units
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.1rem' }}>
+              4 Departmental Labs (INFT)
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ padding: '0.85rem 1rem', background: '#fff' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Open Incidents</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#dc2626', marginTop: '0.2rem' }}>
+              {urgentTickets.length}
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#dc2626', marginTop: '0.1rem' }}>
+              Under technician triage
+            </div>
+          </div>
+        </div>
+
+        {/* Chronic "Lemon" Asset Alert for Replacement Budgeting */}
+        <div
+          style={{
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: '6px',
+            padding: '0.85rem 1rem',
+            marginBottom: '1.25rem',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '0.65rem',
+          }}
+        >
+          <AlertTriangle size={18} color="#d97706" style={{ marginTop: '0.1rem', flexShrink: 0 }} />
+          <div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#92400e' }}>
+              Chronic Failure Flagged (Workstation CC3-PC-14 &bull; 2 Repeat Incidents)
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#b45309', marginTop: '0.15rem' }}>
+              Motherboard SATA controller and RAM channel failure detected twice within 30 days. Recommend budget allocation for motherboard replacement with the SFIT Purchase Committee.
+            </div>
+          </div>
+        </div>
+
+        {/* Master Department Systems Audit Table */}
+        <div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.6rem',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Cpu size={15} color="#0f172a" />
+              <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                Department Infrastructure Fleet Ledger
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Search tag or room..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ fontSize: '0.78rem', padding: '0.25rem 0.55rem', width: '180px' }}
+              />
+              <select
+                className="form-select"
+                value={roomFilter}
+                onChange={(e) => setRoomFilter(e.target.value)}
+                style={{ fontSize: '0.78rem', padding: '0.25rem 0.45rem' }}
+              >
+                {rooms.map((rm) => (
+                  <option key={rm} value={rm}>
+                    {rm === 'All' ? 'All Labs' : rm}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="tool-panel" style={{ overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '120px' }}>Asset Tag</th>
+                    <th>Equipment Description</th>
+                    <th>Lab Room</th>
+                    <th style={{ width: '110px' }}>Static IP</th>
+                    <th style={{ width: '120px' }}>Health Status</th>
+                    <th style={{ width: '100px' }}>Incidents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAssets.map((asset) => (
+                    <tr key={asset._id}>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#0369a1' }}>
+                        {asset.assetTag}
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{asset.name}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+                          {asset.specs}
+                        </div>
+                      </td>
+                      <td style={{ fontSize: '0.78rem', color: '#334155' }}>{asset.labRoom}</td>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', color: '#64748b' }}>
+                        {asset.ipAddress || 'DHCP'}
+                      </td>
+                      <td>
+                        {asset.status === 'Operational' ? (
+                          <span className="badge badge-green">Operational</span>
+                        ) : asset.status === 'Degraded' ? (
+                          <span className="badge badge-amber">Degraded</span>
+                        ) : (
+                          <span className="badge badge-red">Maintenance</span>
+                        )}
+                      </td>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.76rem', color: '#475569' }}>
+                        {asset.totalIncidents || 0} logged
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* =====================================================================
+   * 4. PUBLIC / GUEST LANDING VIEW
+   * ===================================================================== */
   return (
     <div>
       {/* Top Header & Actions */}
@@ -73,47 +993,46 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
           gap: '0.75rem',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: 700,
-              color: '#0f172a',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Lab Equipment Desk
-          </h1>
-          <span
-            style={{
-              fontSize: '0.7rem',
-              fontFamily: 'var(--font-mono)',
-              padding: '0.1rem 0.4rem',
-              borderRadius: '4px',
-              background: '#e0f2fe',
-              color: '#0369a1',
-              fontWeight: 600,
-            }}
-          >
-            SFIT &bull; INFT
-          </span>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <h1
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: '#0f172a',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Lab Equipment Desk
+            </h1>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.1rem 0.4rem',
+                borderRadius: '4px',
+                background: '#e0f2fe',
+                color: '#0369a1',
+                fontWeight: 600,
+              }}
+            >
+              SFIT &bull; INFT
+            </span>
+          </div>
+          <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
+            Sign in as Student, Technician, or Admin using the quick demo options below.
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <button
-            onClick={() => setTab('report')}
-            className="btn-primary"
-          >
-            <AlertCircle size={14} />
-            <span>Report Issue</span>
+          <button onClick={() => quickLogin('student')} className="btn-secondary" style={{ fontSize: '0.76rem' }}>
+            <span>Student (Veer)</span>
           </button>
-
-          <button
-            onClick={() => setTab('assets')}
-            className="btn-secondary"
-          >
-            <Cpu size={14} />
-            <span>Registry</span>
+          <button onClick={() => quickLogin('technician')} className="btn-secondary" style={{ fontSize: '0.76rem' }}>
+            <span>Tech (Ramesh)</span>
+          </button>
+          <button onClick={() => setTab('login')} className="btn-primary" style={{ fontSize: '0.76rem' }}>
+            <span>Sign In &rarr;</span>
           </button>
         </div>
       </div>
@@ -300,17 +1219,11 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
                       </td>
                       <td>
                         {asset.status === 'Operational' ? (
-                          <span className="badge badge-green">
-                            <span>●</span> Operational
-                          </span>
+                          <span className="badge badge-green">Operational</span>
                         ) : asset.status === 'Degraded' ? (
-                          <span className="badge badge-amber">
-                            <span>▲</span> Degraded ({asset.activeTickets})
-                          </span>
+                          <span className="badge badge-amber">Degraded</span>
                         ) : (
-                          <span className="badge badge-red">
-                            <span>■</span> Maintenance ({asset.activeTickets})
-                          </span>
+                          <span className="badge badge-red">Maintenance</span>
                         )}
                       </td>
                       <td style={{ textAlign: 'right' }}>

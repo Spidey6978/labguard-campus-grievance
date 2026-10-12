@@ -252,9 +252,9 @@ export default function Navbar({ currentTab, setTab }) {
                 }}
                 title="Switch demo role"
               >
-                <option value="student">student</option>
-                <option value="technician">technician</option>
-                <option value="admin">hod_admin</option>
+                <option value="student">Veer (Student)</option>
+                <option value="technician">Ramesh (Tech)</option>
+                <option value="admin">Dr. Sharma (HOD)</option>
               </select>
 
               <button
@@ -278,7 +278,7 @@ export default function Navbar({ currentTab, setTab }) {
                 className="btn-secondary"
                 style={{ fontSize: '0.76rem', padding: '0.25rem 0.55rem' }}
               >
-                Student
+                Veer (Student)
               </button>
               <button
                 onClick={() => quickLogin('technician')}
