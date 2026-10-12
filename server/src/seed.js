@@ -24,7 +24,7 @@ export async function seedData() {
       role: 'student',
       usn: 'PID-221089',
       college: 'St. Francis Institute of Technology (SFIT), Mumbai',
-      department: 'Computer Engineering (CMPN)',
+      department: 'Information Technology (INFT)',
       phone: '+91 98840 12345',
     });
 
@@ -35,18 +35,18 @@ export async function seedData() {
       role: 'technician',
       usn: 'SFIT-TECH-04',
       college: 'St. Francis Institute of Technology (SFIT), Mumbai',
-      department: 'Computer Engineering (CMPN)',
+      department: 'Information Technology (INFT)',
       phone: '+91 97720 98765',
     });
 
     const admin = await User.create({
       name: 'Dr. S. N. Sharma (HOD / Lab In-Charge)',
-      email: 'hod.cmpn@sfit.ac.in',
+      email: 'hod.inft@sfit.ac.in',
       password: 'admin123',
       role: 'admin',
       usn: 'SFIT-HOD-01',
       college: 'St. Francis Institute of Technology (SFIT), Mumbai',
-      department: 'Computer Engineering (CMPN)',
+      department: 'Information Technology (INFT)',
       phone: '+91 99001 55443',
     });
 
@@ -166,7 +166,7 @@ export async function seedData() {
       timeline: [
         {
           status: 'Reported',
-          note: 'Incident reported by Rahul Sharma (PID-221089) during CMPN Lab Batch 2.',
+          note: 'Incident reported by Rahul Sharma (PID-221089) during INFT Lab Batch 2.',
           updatedBy: student._id,
           timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
         },

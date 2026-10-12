@@ -70,7 +70,7 @@ export function AuthProvider({ children }) {
   // Instant 1-Click Role Switcher for Viva Evaluation
   const quickLogin = async (role = 'student') => {
     if (role === 'admin') {
-      return await login('hod.cmpn@sfit.ac.in', 'admin123');
+      return await login('hod.inft@sfit.ac.in', 'admin123');
     } else if (role === 'technician') {
       return await login('ramesh.tech@sfit.ac.in', 'tech123');
     } else {

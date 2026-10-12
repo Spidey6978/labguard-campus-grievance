@@ -107,34 +107,27 @@ export default function AnalyticsPage() {
         <div>
           <div
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '999px',
-              background: 'rgba(139, 92, 246, 0.1)',
-              color: '#c084fc',
               fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.06em',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-subtle)',
               textTransform: 'uppercase',
-              marginBottom: '0.75rem',
+              letterSpacing: '0.04em',
+              marginBottom: '0.2rem',
             }}
           >
-            <ShieldCheck size={14} />
-            NBA Criterion 4 &bull; Technical Support &amp; Maintenance Audit
+            SFIT &bull; Department of Information Technology
           </div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-            Department Hardware Health &amp; SLA Compliance
+          <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+            Equipment Maintenance &amp; SLA Logs
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.35rem' }}>
-            Auditable MTTR SLA tracking, equipment availability metrics, and chronic failure analysis.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            Workstation uptime logs, MTTR turnaround performance, and official audit exports.
           </p>
         </div>
 
-        <button onClick={handleExportCSV} className="btn-primary" style={{ fontSize: '0.88rem' }}>
-          <FileSpreadsheet size={16} />
-          Export NBA Audit CSV Log
+        <button onClick={handleExportCSV} className="btn-primary" style={{ fontSize: '0.82rem' }}>
+          <FileSpreadsheet size={15} />
+          Export CSV Maintenance Log
         </button>
       </div>
 

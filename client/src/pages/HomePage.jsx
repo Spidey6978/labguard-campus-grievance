@@ -1,256 +1,449 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  ShieldAlert,
-  Wrench,
   AlertCircle,
-  Cpu,
-  BarChart3,
+  Search,
+  Filter,
   Clock,
-  CheckCircle2,
   ArrowRight,
-  Sparkles,
-  QrCode,
-  ShieldCheck,
-  Zap,
+  CheckCircle2,
+  Cpu,
+  Wrench,
+  ChevronRight,
+  ExternalLink,
 } from 'lucide-react';
+import { apiRequest } from '../utils/api.js';
 
 export default function HomePage({ assets, setTab, onSelectAsset }) {
-  const degradedAssets = assets.filter((a) => a.status !== 'Operational');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [roomFilter, setRoomFilter] = useState('All');
+  const [activeView, setActiveView] = useState('assets'); // 'assets' | 'tickets'
+  const [tickets, setTickets] = useState([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+
+  useEffect(() => {
+    async function fetchTickets() {
+      setLoadingTickets(true);
+      try {
+        const res = await apiRequest('/tickets');
+        if (res.success) {
+          setTickets(res.data);
+        }
+      } catch (err) {
+        console.warn('Could not load tickets:', err);
+      } finally {
+        setLoadingTickets(false);
+      }
+    }
+    fetchTickets();
+  }, []);
+
+  // Filter Assets
+  const filteredAssets = assets.filter((asset) => {
+    const matchesSearch =
+      asset.assetTag?.toLowerCase().includes(search.toLowerCase()) ||
+      asset.name?.toLowerCase().includes(search.toLowerCase()) ||
+      asset.labRoom?.toLowerCase().includes(search.toLowerCase()) ||
+      asset.specs?.toLowerCase().includes(search.toLowerCase()) ||
+      asset.ipAddress?.includes(search);
+
+    const matchesStatus =
+      statusFilter === 'All'
+        ? true
+        : statusFilter === 'Issue'
+        ? asset.status !== 'Operational'
+        : asset.status === statusFilter;
+
+    const matchesRoom = roomFilter === 'All' ? true : asset.labRoom === roomFilter;
+
+    return matchesSearch && matchesStatus && matchesRoom;
+  });
+
+  const rooms = ['All', ...new Set(assets.map((a) => a.labRoom))];
+  const totalIssues = assets.filter((a) => a.status !== 'Operational').length;
+  const operationalCount = assets.filter((a) => a.status === 'Operational').length;
+
+  const formatSlaRemaining = (deadline) => {
+    if (!deadline) return null;
+    const diff = new Date(deadline) - new Date();
+    if (diff <= 0) return { text: 'EXPIRED', urgent: true };
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { text: `${hours}h ${mins}m left`, urgent: hours < 12 };
+  };
 
   return (
     <div>
-      {/* Hero Section */}
-      <section style={{ textAlign: 'center', padding: '2.5rem 1rem 3.5rem', position: 'relative' }}>
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 1rem',
-            borderRadius: '9999px',
-            background: 'rgba(0, 242, 254, 0.08)',
-            border: '1px solid rgba(0, 242, 254, 0.25)',
-            marginBottom: '1.5rem',
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: 'var(--accent-cyan)',
-          }}
-        >
-          <Sparkles size={14} />
-          St. Francis Institute of Technology (SFIT) &bull; Department of Information Technology
+      {/* Header Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '1.25rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-subtle)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: '0.2rem',
+            }}
+          >
+            SFIT &bull; Department of Information Technology
+          </div>
+          <h1
+            style={{
+              fontSize: '1.45rem',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              color: '#f0f6fc',
+            }}
+          >
+            Lab Equipment SLA Desk
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            Real-time campus workstation monitoring, grievance triage queue, and SLA state machine.
+          </p>
         </div>
 
-        <h1
-          style={{
-            fontSize: 'clamp(2.4rem, 5vw, 4rem)',
-            fontWeight: 900,
-            letterSpacing: '-0.03em',
-            lineHeight: 1.15,
-            marginBottom: '1.25rem',
-          }}
-        >
-          Institutional Lab Equipment &amp; <br />
-          <span className="gradient-text-cyan">Grievance SLA Maintenance Desk</span>
-        </h1>
-
-        <p
-          style={{
-            maxWidth: '720px',
-            margin: '0 auto 2.25rem',
-            fontSize: '1.08rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.6,
-          }}
-        >
-          Replaces outdated manual lab registers with instant QR workstation auditing, SLA-backed
-          technician dispatch, and automated departmental hardware uptime analytics for NBA/NAAC compliance.
-        </p>
-
-        {/* CTA Buttons */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => setTab('report')}
             className="btn-primary"
-            style={{ padding: '0.9rem 2rem', fontSize: '1rem', background: 'linear-gradient(135deg, #ef4444, #f59e0b)' }}
+            style={{ fontSize: '0.85rem', padding: '0.45rem 0.95rem' }}
           >
-            <AlertCircle size={18} />
-            Report Fault / Grievance &rarr;
+            <AlertCircle size={15} />
+            <span>Report Fault</span>
           </button>
 
           <button
             onClick={() => setTab('assets')}
             className="btn-secondary"
-            style={{ padding: '0.9rem 1.8rem', fontSize: '1rem', borderColor: 'var(--border-glow)' }}
+            style={{ fontSize: '0.85rem' }}
           >
-            <QrCode size={18} color="var(--accent-cyan)" />
-            Scan Workstation QR Tag
+            <Cpu size={15} />
+            <span>Asset Registry</span>
           </button>
         </div>
+      </div>
 
-        {/* Live Metrics Cards */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1.25rem',
-            marginTop: '3.5rem',
-            maxWidth: '960px',
-            marginRight: 'auto',
-            marginLeft: 'auto',
-          }}
-        >
-          <div className="glass-panel" style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-green)' }}>
-              94.2%
-            </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Fleet Hardware Uptime
-            </div>
+      {/* Control / Filter Bar (GitIngest Style) */}
+      <div
+        className="tool-panel"
+        style={{
+          padding: '0.75rem 1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem',
+        }}
+      >
+        {/* Search input + view toggles */}
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+            <Search
+              size={15}
+              color="var(--text-subtle)"
+              style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}
+            />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Filter by tag (CC3-PC-14), room, spec, or IP..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: '100%', paddingLeft: '2.1rem', fontSize: '0.86rem', paddingBlock: '0.45rem' }}
+            />
           </div>
 
-          <div className="glass-panel" style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: '#f59e0b' }}>
-              &lt; 24h
-            </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Critical SLA Turnaround
-            </div>
-          </div>
-
-          <div className="glass-panel" style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-cyan)' }}>
-              8 Assets
-            </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Across 4 Campus Labs
-            </div>
-          </div>
-
-          <div className="glass-panel" style={{ padding: '1.25rem' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: '#c084fc' }}>
-              NBA / NAAC
-            </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Audit-Ready CSV Logs
-            </div>
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            <select
+              className="form-select"
+              value={roomFilter}
+              onChange={(e) => setRoomFilter(e.target.value)}
+              style={{ fontSize: '0.82rem', padding: '0.45rem 0.75rem', color: 'var(--text-main)' }}
+            >
+              {rooms.map((rm) => (
+                <option key={rm} value={rm}>
+                  {rm === 'All' ? 'All Labs' : rm}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      </section>
 
-      {/* Active Hardware Outages / Degraded Systems Ticker */}
-      {degradedAssets.length > 0 && (
-        <section style={{ marginTop: '2.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                Active Maintenance Alerts
-              </div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>
-                Equipment Currently Under Triage ({degradedAssets.length})
-              </h2>
-            </div>
+        {/* Status Pills & View Tabs */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            paddingTop: '0.25rem',
+            borderTop: '1px solid #21262d',
+          }}
+        >
+          {/* Status Tabs */}
+          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setStatusFilter('All')}
+              style={{
+                fontSize: '0.78rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.2rem 0.55rem',
+                borderRadius: '4px',
+                background: statusFilter === 'All' ? '#21262d' : 'transparent',
+                color: statusFilter === 'All' ? '#e6edf3' : '#8b949e',
+                border: statusFilter === 'All' ? '1px solid #30363d' : '1px solid transparent',
+              }}
+            >
+              All ({assets.length})
+            </button>
 
             <button
-              onClick={() => setTab('assets')}
-              style={{ background: 'transparent', color: 'var(--accent-cyan)', fontWeight: 700, fontSize: '0.88rem' }}
+              onClick={() => setStatusFilter('Issue')}
+              style={{
+                fontSize: '0.78rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.2rem 0.55rem',
+                borderRadius: '4px',
+                background: statusFilter === 'Issue' ? 'rgba(218, 54, 51, 0.15)' : 'transparent',
+                color: statusFilter === 'Issue' ? '#f85149' : '#8b949e',
+                border: statusFilter === 'Issue' ? '1px solid rgba(248, 81, 73, 0.4)' : '1px solid transparent',
+              }}
             >
-              View All Assets &rarr;
+              Attention Required ({totalIssues})
+            </button>
+
+            <button
+              onClick={() => setStatusFilter('Operational')}
+              style={{
+                fontSize: '0.78rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.2rem 0.55rem',
+                borderRadius: '4px',
+                background: statusFilter === 'Operational' ? 'rgba(35, 134, 54, 0.15)' : 'transparent',
+                color: statusFilter === 'Operational' ? '#3fb950' : '#8b949e',
+                border: statusFilter === 'Operational' ? '1px solid rgba(46, 160, 67, 0.4)' : '1px solid transparent',
+              }}
+            >
+              Operational ({operationalCount})
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-            {degradedAssets.map((asset) => (
-              <div
-                key={asset._id}
-                className="glass-panel glow-card"
-                style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-              >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-cyan)' }}>
-                      {asset.assetTag}
-                    </span>
-                    <span className={`badge ${asset.status === 'Degraded' ? 'badge-amber' : 'badge-red'}`}>
-                      {asset.status}
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', marginBottom: '0.35rem' }}>
-                    {asset.name}
-                  </h4>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '1rem' }}>
-                    📍 {asset.labRoom}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => {
-                    onSelectAsset(asset);
-                    setTab('report');
-                  }}
-                  className="btn-secondary"
-                  style={{ width: '100%', fontSize: '0.82rem', justifyContent: 'space-between' }}
-                >
-                  <span>File Additional Symptom</span>
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Academic Problem Statement Defense Callout (Viva Gold) */}
-      <section
-        className="glass-panel"
-        style={{
-          marginTop: '4rem',
-          padding: '2.5rem',
-          position: 'relative',
-          overflow: 'hidden',
-          borderColor: 'rgba(0, 242, 254, 0.25)',
-        }}
-      >
-        <div style={{ maxWidth: '840px' }}>
-          <div className="badge badge-cyan" style={{ marginBottom: '1rem' }}>
-            Institutional Problem Statement &amp; Accreditation Utility
-          </div>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
-            Why LabGuard Replaces Antiquated Physical Lab Registers
-          </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-            In traditional university engineering departments, equipment breakdowns (BSOD crashes,
-            damaged HDMI cables, dead LAN sockets, malfunctioning SMPS) are logged onto paper books that
-            rarely get reviewed. This causes workstation downtime for weeks and disrupts practical exam
-            batches. LabGuard enforces an SLA state machine, attaches dynamic QR codes to individual bench
-            workstations, and exports cryptographically verifiable maintenance audit logs for NBA/NAAC Tier-1
-            accreditation reviews.
-          </p>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '1rem',
-              fontSize: '0.85rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff' }}>
-              <CheckCircle2 size={18} color="var(--accent-green)" />
-              Workstation Dynamic QR Asset Tags
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff' }}>
-              <CheckCircle2 size={18} color="var(--accent-green)" />
-              Enforced SLA Turnaround Counter
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff' }}>
-              <CheckCircle2 size={18} color="var(--accent-green)" />
-              Audit-Ready CSV/PDF Maintenance Log
-            </div>
+          {/* View Mode Toggle */}
+          <div style={{ display: 'flex', gap: '0.25rem' }}>
+            <button
+              onClick={() => setActiveView('assets')}
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.2rem 0.6rem',
+                borderRadius: '4px',
+                background: activeView === 'assets' ? '#30363d' : 'transparent',
+                color: activeView === 'assets' ? '#fff' : '#8b949e',
+                border: '1px solid #30363d',
+              }}
+            >
+              Systems Table
+            </button>
+            <button
+              onClick={() => setActiveView('tickets')}
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.2rem 0.6rem',
+                borderRadius: '4px',
+                background: activeView === 'tickets' ? '#30363d' : 'transparent',
+                color: activeView === 'tickets' ? '#fff' : '#8b949e',
+                border: '1px solid #30363d',
+              }}
+            >
+              Ticket Queue ({tickets.length})
+            </button>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Main Data Section */}
+      {activeView === 'assets' ? (
+        <div className="tool-panel" style={{ overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '130px' }}>Asset Tag</th>
+                  <th>System Name &amp; Hardware Spec</th>
+                  <th>Lab Location</th>
+                  <th style={{ width: '110px' }}>IP Subnet</th>
+                  <th style={{ width: '150px' }}>Status</th>
+                  <th style={{ textAlign: 'right', width: '110px' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAssets.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                      No systems matched filter query.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredAssets.map((asset) => (
+                    <tr key={asset._id}>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#58a6ff' }}>
+                        {asset.assetTag}
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#e6edf3' }}>{asset.name}</div>
+                        <div
+                          style={{
+                            fontSize: '0.78rem',
+                            color: 'var(--text-muted)',
+                            fontFamily: 'var(--font-mono)',
+                            marginTop: '0.15rem',
+                          }}
+                        >
+                          {asset.specs}
+                        </div>
+                      </td>
+                      <td style={{ color: '#c9d1d9', fontSize: '0.82rem' }}>{asset.labRoom}</td>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-subtle)' }}>
+                        {asset.ipAddress || 'DHCP'}
+                      </td>
+                      <td>
+                        {asset.status === 'Operational' ? (
+                          <span className="badge badge-green">
+                            <span style={{ fontSize: '0.6rem' }}>●</span> Operational
+                          </span>
+                        ) : asset.status === 'Degraded' ? (
+                          <span className="badge badge-amber">
+                            <span style={{ fontSize: '0.6rem' }}>▲</span> Degraded ({asset.activeTickets})
+                          </span>
+                        ) : (
+                          <span className="badge badge-red">
+                            <span style={{ fontSize: '0.6rem' }}>■</span> Maintenance ({asset.activeTickets})
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          onClick={() => {
+                            onSelectAsset(asset);
+                            setTab('report');
+                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: '0.75rem', padding: '0.25rem 0.55rem' }}
+                          title="Report symptom on this workstation"
+                        >
+                          Report &rarr;
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* Live Incident Ticket Queue */
+        <div className="tool-panel" style={{ overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '120px' }}>Ticket #</th>
+                  <th style={{ width: '110px' }}>Asset</th>
+                  <th>Reported Symptom &amp; Notes</th>
+                  <th style={{ width: '100px' }}>Priority</th>
+                  <th style={{ width: '130px' }}>Status</th>
+                  <th style={{ width: '140px' }}>SLA Target</th>
+                  <th style={{ textAlign: 'right', width: '90px' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                      No pending tickets in queue.
+                    </td>
+                  </tr>
+                ) : (
+                  tickets.map((t) => {
+                    const sla = formatSlaRemaining(t.slaDeadline);
+                    return (
+                      <tr key={t._id}>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#bc8cff' }}>
+                          {t.ticketNumber}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', color: '#58a6ff' }}>
+                          {t.asset?.assetTag || 'N/A'}
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#e6edf3' }}>{t.title}</div>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                            {t.description?.slice(0, 85)}...
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              t.priority === 'Critical'
+                                ? 'badge-red'
+                                : t.priority === 'High'
+                                ? 'badge-amber'
+                                : 'badge-neutral'
+                            }`}
+                          >
+                            {t.priority}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              t.status === 'Resolved'
+                                ? 'badge-green'
+                                : t.status === 'In-Progress'
+                                ? 'badge-amber'
+                                : 'badge-neutral'
+                            }`}
+                          >
+                            {t.status}
+                          </span>
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
+                          {t.status === 'Resolved' ? (
+                            <span style={{ color: '#3fb950' }}>Resolved</span>
+                          ) : sla ? (
+                            <span style={{ color: sla.urgent ? '#f85149' : '#d29922' }}>{sla.text}</span>
+                          ) : (
+                            <span style={{ color: 'var(--text-subtle)' }}>N/A</span>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            onClick={() => setTab('triage')}
+                            className="btn-secondary"
+                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.55rem' }}
+                          >
+                            Triage &rarr;
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

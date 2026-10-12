@@ -59,31 +59,24 @@ export default function MyTicketsPage({ setTab, onReportClick }) {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: '2.5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '999px',
-            background: 'rgba(0, 242, 254, 0.1)',
-            color: 'var(--accent-cyan)',
             fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.06em',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-subtle)',
             textTransform: 'uppercase',
-            marginBottom: '0.75rem',
+            letterSpacing: '0.04em',
+            marginBottom: '0.2rem',
           }}
         >
-          <Inbox size={14} />
-          Student Incident Ledger
+          SFIT &bull; Department of Information Technology
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-          My Reported Lab Grievances ({tickets.length})
+        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+          My Filed Grievances ({tickets.length})
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.35rem' }}>
-          Track the real-time repair progress, technician diagnostic logs, and resolution timestamps of your reported hardware.
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          Status timeline, diagnostic notes, and SLA resolution tracking for your reported incidents.
         </p>
       </div>
 

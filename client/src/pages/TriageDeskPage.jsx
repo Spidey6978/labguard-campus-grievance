@@ -102,31 +102,24 @@ export default function TriageDeskPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: '2.5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '999px',
-            background: 'rgba(245, 158, 11, 0.12)',
-            color: '#fbbf24',
             fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.06em',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-subtle)',
             textTransform: 'uppercase',
-            marginBottom: '0.75rem',
+            letterSpacing: '0.04em',
+            marginBottom: '0.2rem',
           }}
         >
-          <Wrench size={14} />
-          Hardware Technician Operations
+          SFIT &bull; Department of Information Technology
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-          Laboratory Maintenance Triage Desk
+        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+          Hardware Maintenance Triage Queue
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.35rem' }}>
-          Active incident queue. Dispatch repairs, log replacement parts, and certify restored lab equipment.
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          Active incident queue. Update repair states, record replaced components, and certify bench restoration.
         </p>
       </div>
 
@@ -180,7 +173,7 @@ export default function TriageDeskPage() {
             placeholder="Search Ticket, Asset, Reporter..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '999px' }}
+            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '6px' }}
           />
         </div>
       </div>

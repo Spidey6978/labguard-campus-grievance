@@ -39,13 +39,13 @@ export default function AssetCard({ asset, onViewQR, onReportFault }) {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.85rem',
-                fontWeight: 800,
-                color: 'var(--accent-cyan)',
-                background: 'rgba(0, 242, 254, 0.1)',
-                border: '1px solid rgba(0, 242, 254, 0.3)',
+                fontWeight: 700,
+                color: '#58a6ff',
+                background: '#21262d',
+                border: '1px solid #30363d',
                 padding: '0.2rem 0.55rem',
-                borderRadius: '6px',
-                letterSpacing: '0.05em',
+                borderRadius: '4px',
+                letterSpacing: '0.04em',
               }}
             >
               {assetTag}

@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     department: {
       type: String,
       trim: true,
-      default: 'Computer Engineering',
+      default: 'Information Technology (INFT)',
     },
     role: {
       type: String,

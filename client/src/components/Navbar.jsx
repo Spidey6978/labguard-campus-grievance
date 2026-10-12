@@ -1,17 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
-  ShieldAlert,
   Wrench,
   AlertCircle,
   Cpu,
   BarChart3,
   Inbox,
   LogOut,
-  LogIn,
-  QrCode,
-  ShieldCheck,
-  Zap,
+  Terminal,
 } from 'lucide-react';
 
 export default function Navbar({ currentTab, setTab }) {
@@ -23,156 +19,146 @@ export default function Navbar({ currentTab, setTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(7, 9, 14, 0.88)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--border-subtle)',
+        backgroundColor: '#161b22',
+        borderBottom: '1px solid #30363d',
       }}
     >
       <div
         style={{
-          maxWidth: '1240px',
+          maxWidth: '1200px',
           margin: '0 auto',
-          padding: '0.85rem 1.5rem',
+          padding: '0.65rem 1.25rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        {/* Brand Logo */}
+        {/* Brand / Title */}
         <div
           onClick={() => setTab('home')}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.75rem',
+            gap: '0.6rem',
             cursor: 'pointer',
           }}
         >
           <div
             style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)',
+              width: '28px',
+              height: '28px',
+              borderRadius: '6px',
+              background: '#21262d',
+              border: '1px solid #30363d',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(0, 242, 254, 0.35)',
+              color: '#58a6ff',
             }}
           >
-            <ShieldAlert size={22} color="#07090e" strokeWidth={2.5} />
+            <Terminal size={16} />
           </div>
-          <div>
-            <div
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span
               style={{
-                fontSize: '1.2rem',
-                fontWeight: 800,
-                letterSpacing: '-0.02em',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+                color: '#e6edf3',
+                letterSpacing: '-0.01em',
               }}
             >
-              <span>LABGUARD</span>
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  padding: '0.1rem 0.45rem',
-                  borderRadius: '4px',
-                  background: 'rgba(0, 242, 254, 0.15)',
-                  color: 'var(--accent-cyan)',
-                  border: '1px solid rgba(0, 242, 254, 0.3)',
-                  fontWeight: 700,
-                }}
-              >
-                SFIT
-              </span>
-            </div>
-            <div
+              sfit-labguard
+            </span>
+            <span
               style={{
-                fontSize: '0.68rem',
-                color: 'var(--text-muted)',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.1rem 0.4rem',
+                borderRadius: '4px',
+                background: '#21262d',
+                color: '#8b949e',
+                border: '1px solid #30363d',
               }}
             >
-              Institutional Lab Grievance Desk
-            </div>
+              INFT
+            </span>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <button
             onClick={() => setTab('home')}
             style={{
-              padding: '0.55rem 0.85rem',
-              borderRadius: '8px',
-              background: currentTab === 'home' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              color: currentTab === 'home' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-              fontWeight: 600,
-              fontSize: '0.88rem',
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              background: currentTab === 'home' ? '#21262d' : 'transparent',
+              color: currentTab === 'home' ? '#f0f6fc' : '#8b949e',
+              fontWeight: 500,
+              fontSize: '0.84rem',
+              border: currentTab === 'home' ? '1px solid #30363d' : '1px solid transparent',
             }}
           >
-            Overview
+            Workbench
           </button>
 
           <button
             onClick={() => setTab('report')}
             style={{
-              padding: '0.55rem 0.95rem',
-              borderRadius: '8px',
-              background:
-                currentTab === 'report'
-                  ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(245, 158, 11, 0.25))'
-                  : 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#f87171',
-              fontWeight: 700,
-              fontSize: '0.88rem',
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              background: currentTab === 'report' ? '#21262d' : 'transparent',
+              color: currentTab === 'report' ? '#f85149' : '#8b949e',
+              fontWeight: 500,
+              fontSize: '0.84rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.35rem',
+              border: currentTab === 'report' ? '1px solid #30363d' : '1px solid transparent',
             }}
           >
-            <AlertCircle size={15} />
-            Report Fault
+            <AlertCircle size={14} />
+            Report Issue
           </button>
 
           <button
             onClick={() => setTab('assets')}
             style={{
-              padding: '0.55rem 0.85rem',
-              borderRadius: '8px',
-              background: currentTab === 'assets' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              color: currentTab === 'assets' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-              fontWeight: 600,
-              fontSize: '0.88rem',
+              padding: '0.4rem 0.75rem',
+              borderRadius: '6px',
+              background: currentTab === 'assets' ? '#21262d' : 'transparent',
+              color: currentTab === 'assets' ? '#f0f6fc' : '#8b949e',
+              fontWeight: 500,
+              fontSize: '0.84rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.35rem',
+              border: currentTab === 'assets' ? '1px solid #30363d' : '1px solid transparent',
             }}
           >
-            <Cpu size={15} />
-            Asset Registry &amp; QR
+            <Cpu size={14} />
+            Asset Registry
           </button>
 
           {user && (
             <button
               onClick={() => setTab('my-tickets')}
               style={{
-                padding: '0.55rem 0.85rem',
-                borderRadius: '8px',
-                background: currentTab === 'my-tickets' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                color: currentTab === 'my-tickets' ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                fontWeight: 600,
-                fontSize: '0.88rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '6px',
+                background: currentTab === 'my-tickets' ? '#21262d' : 'transparent',
+                color: currentTab === 'my-tickets' ? '#f0f6fc' : '#8b949e',
+                fontWeight: 500,
+                fontSize: '0.84rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                gap: '0.35rem',
+                border: currentTab === 'my-tickets' ? '1px solid #30363d' : '1px solid transparent',
               }}
             >
-              <Inbox size={15} />
+              <Inbox size={14} />
               My Tickets
             </button>
           )}
@@ -181,142 +167,133 @@ export default function Navbar({ currentTab, setTab }) {
             <button
               onClick={() => setTab('triage')}
               style={{
-                padding: '0.55rem 0.85rem',
-                borderRadius: '8px',
-                background: currentTab === 'triage' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-                color: currentTab === 'triage' ? '#fbbf24' : 'var(--text-muted)',
-                fontWeight: 700,
-                fontSize: '0.88rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '6px',
+                background: currentTab === 'triage' ? '#21262d' : 'transparent',
+                color: currentTab === 'triage' ? '#d29922' : '#8b949e',
+                fontWeight: 600,
+                fontSize: '0.84rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                gap: '0.35rem',
+                border: currentTab === 'triage' ? '1px solid #30363d' : '1px solid transparent',
               }}
             >
-              <Wrench size={15} />
+              <Wrench size={14} />
               Triage Desk
             </button>
           )}
 
-          {isTechnician && (
+          {isAdmin && (
             <button
               onClick={() => setTab('analytics')}
               style={{
-                padding: '0.55rem 0.85rem',
-                borderRadius: '8px',
-                background: currentTab === 'analytics' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                color: currentTab === 'analytics' ? '#c084fc' : 'var(--text-muted)',
-                fontWeight: 700,
-                fontSize: '0.88rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '6px',
+                background: currentTab === 'analytics' ? '#21262d' : 'transparent',
+                color: currentTab === 'analytics' ? '#bc8cff' : '#8b949e',
+                fontWeight: 600,
+                fontSize: '0.84rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                gap: '0.35rem',
+                border: currentTab === 'analytics' ? '1px solid #30363d' : '1px solid transparent',
               }}
             >
-              <BarChart3 size={15} />
-              HOD Analytics
+              <BarChart3 size={14} />
+              SLA Logs
             </button>
           )}
         </div>
 
-        {/* User Status & Instant Demo Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* User & Role Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.35rem 0.75rem',
-                  borderRadius: '9999px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-subtle)',
+                  gap: '0.4rem',
+                  fontSize: '0.8rem',
+                  color: '#e6edf3',
+                  padding: '0.25rem 0.6rem',
+                  background: '#21262d',
+                  borderRadius: '6px',
+                  border: '1px solid #30363d',
                 }}
               >
-                <div
+                <span style={{ fontFamily: 'var(--font-mono)', color: '#8b949e' }}>
+                  {user.usn || user.name.split(' ')[0]}
+                </span>
+                <span
                   style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '50%',
-                    background: isAdmin
-                      ? 'linear-gradient(135deg, #a855f7, #6366f1)'
-                      : user.role === 'technician'
-                      ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
-                      : 'linear-gradient(135deg, #00f2fe, #3b82f6)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.75rem',
+                    fontSize: '0.7rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: isAdmin ? '#bc8cff' : user.role === 'technician' ? '#d29922' : '#58a6ff',
+                    textTransform: 'uppercase',
                   }}
                 >
-                  {user.name.charAt(0)}
-                </div>
-                <div style={{ textAlign: 'left', lineHeight: 1.2 }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>{user.name.split(' ')[0]}</div>
-                  <div
-                    style={{
-                      fontSize: '0.65rem',
-                      color: isAdmin ? '#c084fc' : user.role === 'technician' ? '#fbbf24' : 'var(--accent-cyan)',
-                      textTransform: 'uppercase',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {user.role}
-                  </div>
-                </div>
+                  [{user.role}]
+                </span>
               </div>
 
-              {/* Quick Switch Dropdown / Buttons */}
+              {/* Minimal Role Switcher */}
               <select
                 value={user.role}
                 onChange={(e) => quickLogin(e.target.value)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.72rem',
-                  padding: '0.35rem 0.5rem',
+                  background: '#21262d',
+                  border: '1px solid #30363d',
+                  color: '#8b949e',
+                  fontSize: '0.75rem',
+                  padding: '0.28rem 0.45rem',
                   borderRadius: '6px',
-                  fontWeight: 600,
+                  fontWeight: 500,
                   cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)',
                 }}
-                title="Switch demo role for evaluation"
+                title="Switch role for evaluation"
               >
-                <option value="student">🎓 Student View</option>
-                <option value="technician">🔧 Technician Desk</option>
-                <option value="admin">👔 HOD Admin View</option>
+                <option value="student">student</option>
+                <option value="technician">technician</option>
+                <option value="admin">hod_admin</option>
               </select>
 
               <button
                 onClick={logout}
                 title="Logout"
-                style={{ background: 'transparent', color: 'var(--text-subtle)', padding: '0.35rem' }}
+                style={{
+                  background: 'transparent',
+                  color: '#6e7681',
+                  padding: '0.3rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
               >
-                <LogOut size={16} />
+                <LogOut size={15} />
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
               <button
                 onClick={() => quickLogin('student')}
                 className="btn-secondary"
-                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}
               >
                 Student
               </button>
               <button
                 onClick={() => quickLogin('technician')}
                 className="btn-secondary"
-                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderColor: 'rgba(245, 158, 11, 0.3)' }}
+                style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}
               >
-                Technician
+                Tech
               </button>
               <button
                 onClick={() => setTab('login')}
                 className="btn-primary"
-                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                style={{ fontSize: '0.78rem', padding: '0.3rem 0.75rem' }}
               >
                 Sign In
               </button>

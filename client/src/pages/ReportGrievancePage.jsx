@@ -101,33 +101,26 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '780px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '999px',
-            background: 'rgba(239, 68, 68, 0.1)',
-            color: '#f87171',
             fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.06em',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-subtle)',
             textTransform: 'uppercase',
-            marginBottom: '0.75rem',
+            letterSpacing: '0.04em',
+            marginBottom: '0.2rem',
           }}
         >
-          <AlertCircle size={14} />
-          Central Fault Redressal Portal
+          SFIT &bull; Department of Information Technology
         </div>
-        <h1 style={{ fontSize: '2.3rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-          File Equipment Grievance / Breakdown
+        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+          Report Equipment Fault
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.35rem' }}>
-          Log faulty hardware, network disruptions or OS failures directly to the central lab maintenance desk.
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          Dispatch breakdown symptom directly to technician triage queue with automated SLA countdown.
         </p>
       </div>
 

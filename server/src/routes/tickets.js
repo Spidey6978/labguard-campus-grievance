@@ -94,8 +94,8 @@ router.post('/', protect, async (req, res) => {
 });
 
 // @route   GET /api/tickets
-// @desc    List all tickets with triage filters (Technicians & Admins)
-router.get('/', protect, async (req, res) => {
+// @desc    List all tickets with triage filters
+router.get('/', async (req, res) => {
   try {
     const { status, priority, category, search, labRoom } = req.query;
     let query = {};

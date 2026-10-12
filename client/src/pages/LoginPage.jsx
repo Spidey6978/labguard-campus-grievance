@@ -57,60 +57,51 @@ export default function LoginPage({ setTab }) {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '2rem auto 4rem' }}>
-      <div className="glass-panel glow-card" style={{ padding: '2.5rem 2rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+    <div style={{ maxWidth: '440px', margin: '2rem auto 4rem' }}>
+      <div className="tool-panel" style={{ padding: '1.75rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1rem',
-              boxShadow: '0 0 25px rgba(0, 242, 254, 0.35)',
+              fontSize: '0.72rem',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-subtle)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: '0.2rem',
             }}
           >
-            <ShieldAlert size={26} color="#080c14" />
+            SFIT &bull; Department of Information Technology
           </div>
-
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>
-            {isRegistering ? 'Student Registration' : 'LabGuard Staff & Student Portal'}
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+            {isRegistering ? 'Student Registration' : 'Lab Portal Sign In'}
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '0.35rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.25rem' }}>
             {isRegistering
               ? 'Register with college PID / Roll No to file equipment grievances'
-              : 'Sign in to access fault reporting, triage workbench & SLA analytics'}
+              : 'Sign in to access fault reporting, triage workbench & SLA logs'}
           </p>
         </div>
 
-        {/* 1-Click Quick Demo Shortcuts for Faculty */}
+        {/* Quick Demo Shortcuts */}
         <div
           style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.1rem',
-            border: '1px solid var(--border-glow)',
-            marginBottom: '1.75rem',
+            background: '#0d1117',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.75rem',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '1.25rem',
           }}
         >
           <div
             style={{
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              color: 'var(--accent-cyan)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: '0.65rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
+              fontSize: '0.72rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              marginBottom: '0.5rem',
             }}
           >
-            <Sparkles size={14} />
-            1-Click Faculty Evaluation Shortcuts:
+            Demo Accounts:
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

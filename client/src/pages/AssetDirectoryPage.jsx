@@ -48,31 +48,24 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: '2.5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '999px',
-            background: 'rgba(0, 242, 254, 0.1)',
-            color: 'var(--accent-cyan)',
             fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.06em',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-subtle)',
             textTransform: 'uppercase',
-            marginBottom: '0.75rem',
+            letterSpacing: '0.04em',
+            marginBottom: '0.2rem',
           }}
         >
-          <Cpu size={14} />
-          Hardware Asset Registry &amp; Bench Stickers
+          SFIT &bull; Department of Information Technology
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-          Laboratory Equipment &amp; Workstations
+        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
+          Laboratory Asset Registry
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '0.35rem' }}>
-          All audited institutional lab hardware. Every workstation features a dynamic QR tag for instant bench-side reporting.
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+          Audited computing workstations, network racks, and lab equipment with bench QR stickers.
         </p>
       </div>
 
@@ -128,7 +121,7 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
             placeholder="Search Asset Tag, CPU, Specs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '999px' }}
+            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '6px' }}
           />
         </div>
       </div>

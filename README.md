@@ -1,6 +1,6 @@
 # 🛠️ LABGUARD &mdash; Institutional Lab Asset & Campus Equipment Grievance SLA Desk
 > **Academic Project Title:** *Automated Laboratory Equipment Maintenance, Dynamic QR Bench Auditing & Grievance SLA Resolution Desk*  
-> **Institutional Context:** Department of Computer Engineering (CMPN) &bull; St. Francis Institute of Technology (SFIT), Borivali, Mumbai  
+> **Institutional Context:** Department of Information Technology (INFT) &bull; St. Francis Institute of Technology (SFIT), Borivali, Mumbai  
 > **Accreditation Utility:** NBA Criterion 4 (Facilities & Technical Support) &amp; NAAC Institutional Infrastructure Audits  
 > **Tech Stack:** MERN (MongoDB 8.0, Express 4.21, React 19, Node 22, Vite, Web Audio API)
 
@@ -27,7 +27,7 @@ In engineering colleges, computer labs, embedded workshops, and smart seminar ha
 | :--- | :--- | :--- | :--- | :--- |
 | **🎓 Student (Reporter)** | Rahul Sharma | `rahul@sfit.ac.in` | `student123` | PID: `221089` &bull; Report faults & track tickets |
 | **🔧 Lab Technician** | Ramesh Kumar | `ramesh.tech@sfit.ac.in` | `tech123` | Hardware Desk &bull; Triage queue & log replaced parts |
-| **👔 HOD / Faculty Admin** | Dr. S. N. Sharma | `hod.cmpn@sfit.ac.in` | `admin123` | Central Admin &bull; MTTR SLA analytics & CSV exports |
+| **👔 HOD / Faculty Admin** | Dr. S. N. Sharma | `hod.inft@sfit.ac.in` | `admin123` | Central Admin &bull; MTTR SLA analytics & CSV exports |
 
 > 💡 **Quick Switch Shortcut:** The top navigation bar features a dropdown to switch between **Student**, **Technician**, and **HOD Admin** instantly with one click during viva evaluation!
 
