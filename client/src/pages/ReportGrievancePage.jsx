@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { apiRequest, playSound } from '../utils/api.js';
+import { apiRequest } from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
-  AlertCircle,
-  Wrench,
-  Clock,
   CheckCircle2,
-  Cpu,
-  MapPin,
   Send,
-  Ticket,
-  Sparkles,
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 
 export default function ReportGrievancePage({ assets, preselectedAsset, setTab, onTicketCreated }) {
   const { user, quickLogin } = useAuth();
@@ -54,7 +46,6 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
     setLoading(true);
     setError('');
 
-    // If user is not logged in, auto quick-login as student for zero-friction demo
     if (!user) {
       await quickLogin('student');
     }
@@ -65,17 +56,12 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
         body: JSON.stringify({
           assetId: selectedAssetId,
           assetTag: assetTagInput,
-          title: title.trim(),
-          description: description.trim(),
+          title,
+          description,
           issueCategory,
           priority,
         }),
       });
-
-      playSound('success');
-      try {
-        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-      } catch (e) {}
 
       setSubmittedTicket(res.data);
       if (onTicketCreated) onTicketCreated(res.data);
@@ -101,99 +87,77 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
   };
 
   return (
-    <div style={{ maxWidth: '780px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '640px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-subtle)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            marginBottom: '0.2rem',
-          }}
-        >
-          SFIT &bull; Department of Information Technology
-        </div>
-        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
-          Report Equipment Fault
+      <div style={{ marginBottom: '1rem' }}>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+          Report Fault
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          Dispatch breakdown symptom directly to technician triage queue with automated SLA countdown.
-        </p>
       </div>
 
       {submittedTicket ? (
-        /* Success Confirmation Card */
-        <div className="glass-panel glow-card" style={{ padding: '2.5rem', textAlign: 'center' }}>
+        /* Confirmation Card */
+        <div className="tool-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '42px',
+              height: '42px',
               borderRadius: '50%',
-              background: 'rgba(16, 185, 129, 0.15)',
+              background: '#dcfce7',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1.25rem',
-              color: 'var(--accent-green)',
+              margin: '0 auto 0.75rem',
+              color: '#15803d',
             }}
           >
-            <CheckCircle2 size={36} />
+            <CheckCircle2 size={24} />
           </div>
 
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>
-            Grievance Registered Successfully!
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem' }}>
+            Ticket Logged
           </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.75rem' }}>
-            Your breakdown report has been entered into the active triage queue. A hardware technician will be dispatched.
-          </p>
 
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: 'var(--radius-md)',
-              padding: '1.5rem',
-              maxWidth: '480px',
-              margin: '0 auto 2rem',
+              background: '#f8fafc',
+              borderRadius: '6px',
+              padding: '1rem',
+              maxWidth: '420px',
+              margin: '1rem auto 1.25rem',
               textAlign: 'left',
-              border: '1px solid var(--border-subtle)',
+              border: '1px solid #e2e8f0',
+              fontSize: '0.84rem',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>Ticket Number</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-cyan)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Ticket #</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#7e22ce' }}>
                 {submittedTicket.ticketNumber}
               </span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>Asset Workstation</span>
-              <span style={{ fontWeight: 700, color: '#fff' }}>
-                {submittedTicket.asset?.assetTag} ({submittedTicket.asset?.name})
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>Asset</span>
+              <span style={{ fontWeight: 600, color: '#0f172a' }}>
+                {submittedTicket.asset?.assetTag}
               </span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>SLA Target Deadline</span>
-              <span style={{ fontWeight: 700, color: '#fbbf24' }}>
-                {new Date(submittedTicket.slaDeadline).toLocaleString('en-IN', {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })} ({getSlaHours(submittedTicket.priority)}h SLA)
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ color: '#64748b' }}>SLA Target</span>
+              <span style={{ fontWeight: 600, color: '#b45309' }}>
+                {getSlaHours(submittedTicket.priority)}h SLA
               </span>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>Initial Status</span>
+              <span style={{ color: '#64748b' }}>Status</span>
               <span className="badge badge-amber">{submittedTicket.status}</span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
             <button
               onClick={() => {
                 setSubmittedTicket(null);
@@ -202,29 +166,29 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
               }}
               className="btn-secondary"
             >
-              Report Another Issue
+              Report Another
             </button>
             <button
               onClick={() => setTab('my-tickets')}
               className="btn-primary"
             >
-              View in My Grievances &rarr;
+              View My Tickets &rarr;
             </button>
           </div>
         </div>
       ) : (
         /* Grievance Input Form */
-        <div className="glass-panel" style={{ padding: '2.5rem' }}>
+        <div className="tool-panel" style={{ padding: '1.25rem' }}>
           {error && (
             <div
               style={{
-                padding: '0.85rem 1.25rem',
-                borderRadius: 'var(--radius-sm)',
-                background: 'rgba(239, 68, 68, 0.15)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#f87171',
-                fontSize: '0.88rem',
-                marginBottom: '1.5rem',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '4px',
+                background: '#fee2e2',
+                border: '1px solid #fecaca',
+                color: '#b91c1c',
+                fontSize: '0.82rem',
+                marginBottom: '1rem',
               }}
             >
               {error}
@@ -234,7 +198,7 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
           <form onSubmit={handleSubmit}>
             {/* Asset Selection */}
             <div className="form-group">
-              <label className="form-label">Target Workstation / Hardware Asset</label>
+              <label className="form-label">Target Equipment / Bench</label>
               <select
                 className="form-select"
                 value={selectedAssetId}
@@ -249,61 +213,59 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
               </select>
             </div>
 
-            {/* Category & Priority Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            {/* Category & Priority */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
               <div className="form-group">
-                <label className="form-label">Fault Category</label>
+                <label className="form-label">Category</label>
                 <select
                   className="form-select"
                   value={issueCategory}
                   onChange={(e) => setIssueCategory(e.target.value)}
                 >
-                  <option value="Hardware / Motherboard / RAM">Hardware / Motherboard / RAM</option>
-                  <option value="Software / OS / BlueScreen">Software / OS / BlueScreen</option>
-                  <option value="Peripherals (Mouse / Keyboard / Monitor)">Peripherals (Mouse / Keyboard / Monitor)</option>
-                  <option value="Network / LAN Cable Drop">Network / LAN Cable Drop</option>
-                  <option value="AV / Projector / HDMI">AV / Projector / HDMI</option>
-                  <option value="Electrical / UPS / Power Trip">Electrical / UPS / Power Trip</option>
+                  <option value="Hardware / Motherboard / RAM">Hardware / RAM / Motherboard</option>
+                  <option value="Peripheral / Mouse / Keyboard">Mouse / Keyboard / Monitor</option>
+                  <option value="Network / LAN Cable Drop">Network / LAN / Switch</option>
+                  <option value="AV / Projector / HDMI">AV / Projector / Audio</option>
+                  <option value="Electrical / UPS / Socket">Electrical / UPS / Power</option>
+                  <option value="Software / OS / BlueScreen">Software / OS Crash / BSOD</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label className="form-label">
-                  Severity &amp; SLA Commitment ({getSlaHours(priority)}h Target)
-                </label>
+                <label className="form-label">Priority</label>
                 <select
                   className="form-select"
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
                 >
-                  <option value="Critical">🔴 Critical (Lab Batch Blocker &bull; 24h SLA)</option>
-                  <option value="High">🟠 High Priority (48h SLA)</option>
-                  <option value="Medium">🟡 Medium (Standard &bull; 72h SLA)</option>
-                  <option value="Low">🔵 Low (Minor / Aesthetic &bull; 120h SLA)</option>
+                  <option value="Critical">Critical (24h SLA)</option>
+                  <option value="High">High (48h SLA)</option>
+                  <option value="Medium">Medium (72h SLA)</option>
+                  <option value="Low">Low (120h SLA)</option>
                 </select>
               </div>
             </div>
 
-            {/* Title */}
+            {/* Issue Title */}
             <div className="form-group">
-              <label className="form-label">Incident Headline / Summary</label>
+              <label className="form-label">Symptom Title</label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="e.g. BSOD loop on boot or Monitor HDMI display flickering"
+                placeholder="e.g. System BSOD loop on boot or loose HDMI port"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
 
-            {/* Description */}
+            {/* Detailed Description */}
             <div className="form-group">
-              <label className="form-label">Detailed Symptoms &amp; Error Messages</label>
+              <label className="form-label">Description / Batch Observed</label>
               <textarea
                 className="form-textarea"
-                rows={4}
-                placeholder="Describe what occurred, any error codes displayed on screen, and steps to reproduce..."
+                rows={3}
+                placeholder="Provide steps or error code observed..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
@@ -314,15 +276,10 @@ export default function ReportGrievancePage({ assets, preselectedAsset, setTab, 
               type="submit"
               disabled={loading}
               className="btn-primary"
-              style={{
-                width: '100%',
-                padding: '0.9rem',
-                fontSize: '1rem',
-                marginTop: '1rem',
-                background: 'linear-gradient(135deg, #ef4444, #f59e0b)',
-              }}
+              style={{ width: '100%', padding: '0.55rem', marginTop: '0.4rem' }}
             >
-              {loading ? 'Transmitting to Technician Desk...' : 'Dispatch Maintenance Ticket &rarr;'}
+              <Send size={14} />
+              <span>{loading ? 'Dispatching...' : 'Dispatch Ticket'}</span>
             </button>
           </form>
         </div>

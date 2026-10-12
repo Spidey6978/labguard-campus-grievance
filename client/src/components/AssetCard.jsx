@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, MapPin, AlertCircle, QrCode, ArrowRight, ShieldCheck, Wrench } from 'lucide-react';
+import { MapPin, QrCode } from 'lucide-react';
 
 export default function AssetCard({ asset, onViewQR, onReportFault }) {
   if (!asset) return null;
@@ -13,44 +13,42 @@ export default function AssetCard({ asset, onViewQR, onReportFault }) {
       case 'Degraded':
         return <span className="badge badge-amber">Degraded</span>;
       case 'Under Maintenance':
-        return <span className="badge badge-red">Under Maintenance</span>;
+        return <span className="badge badge-red">Maintenance</span>;
       default:
-        return <span className="badge badge-cyan">{st}</span>;
+        return <span className="badge badge-blue">{st}</span>;
     }
   };
 
   return (
     <div
-      className="glass-panel"
+      className="tool-panel"
       style={{
-        padding: '1.75rem',
+        padding: '1.1rem',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        position: 'relative',
-        overflow: 'hidden',
+        background: '#ffffff',
       }}
     >
       <div>
         {/* Header Tag & Status */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.85rem',
+                fontSize: '0.82rem',
                 fontWeight: 700,
-                color: '#58a6ff',
-                background: '#21262d',
-                border: '1px solid #30363d',
-                padding: '0.2rem 0.55rem',
+                color: '#0369a1',
+                background: '#e0f2fe',
+                border: '1px solid #bae6fd',
+                padding: '0.15rem 0.45rem',
                 borderRadius: '4px',
-                letterSpacing: '0.04em',
               }}
             >
               {assetTag}
             </span>
-            <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
+            <span className="badge badge-neutral" style={{ fontSize: '0.68rem' }}>
               {category}
             </span>
           </div>
@@ -59,60 +57,54 @@ export default function AssetCard({ asset, onViewQR, onReportFault }) {
         </div>
 
         {/* Name & Specs */}
-        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', marginBottom: '0.4rem', lineHeight: 1.3 }}>
+        <h3 style={{ fontSize: '0.98rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem', lineHeight: 1.3 }}>
           {name}
         </h3>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-muted)', fontSize: '0.82rem', marginBottom: '0.75rem' }}>
-          <MapPin size={14} color="var(--accent-blue)" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#64748b', fontSize: '0.78rem', marginBottom: '0.5rem' }}>
+          <MapPin size={13} color="#94a3b8" />
           <span>{labRoom}</span>
         </div>
 
-        <p style={{ color: 'var(--text-subtle)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1.25rem', fontFamily: 'var(--font-mono)' }}>
+        <p style={{ color: '#475569', fontSize: '0.78rem', lineHeight: 1.45, marginBottom: '0.85rem', fontFamily: 'var(--font-mono)' }}>
           {specs}
         </p>
       </div>
 
-      {/* Incident Counters & Actions */}
+      {/* Counters & Actions */}
       <div>
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            fontSize: '0.78rem',
-            color: 'var(--text-muted)',
-            paddingTop: '0.85rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-            marginBottom: '1.15rem',
+            fontSize: '0.75rem',
+            color: '#64748b',
+            paddingTop: '0.5rem',
+            borderTop: '1px solid #f1f5f9',
+            marginBottom: '0.75rem',
           }}
         >
-          <span>Active Tickets: <strong style={{ color: activeTickets > 0 ? '#f87171' : '#fff' }}>{activeTickets}</strong></span>
-          <span>Lifetime Incidents: <strong>{totalIncidents}</strong></span>
+          <span>Active: <strong style={{ color: activeTickets > 0 ? '#dc2626' : '#0f172a' }}>{activeTickets}</strong></span>
+          <span>Total: <strong>{totalIncidents}</strong></span>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.35rem' }}>
           <button
             onClick={() => onViewQR(asset)}
             className="btn-secondary"
-            style={{ flex: 1, fontSize: '0.82rem', padding: '0.6rem 0.75rem' }}
+            style={{ flex: 1, fontSize: '0.76rem', padding: '0.35rem 0.55rem' }}
           >
-            <QrCode size={15} color="var(--accent-cyan)" />
-            Bench QR
+            <QrCode size={13} />
+            <span>QR Tag</span>
           </button>
 
           <button
             onClick={() => onReportFault(asset)}
             className="btn-primary"
-            style={{
-              flex: 1.4,
-              fontSize: '0.82rem',
-              padding: '0.6rem 0.85rem',
-              background: status === 'Operational' ? undefined : 'linear-gradient(135deg, #f59e0b, #ef4444)',
-            }}
+            style={{ flex: 1, fontSize: '0.76rem', padding: '0.35rem 0.55rem' }}
           >
-            <AlertCircle size={15} />
-            Report Fault
+            <span>Report &rarr;</span>
           </button>
         </div>
       </div>

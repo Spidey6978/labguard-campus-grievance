@@ -19,67 +19,65 @@ export default function Navbar({ currentTab, setTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: '#161b22',
-        borderBottom: '1px solid #30363d',
+        backgroundColor: '#ffffff',
+        borderBottom: '1px solid #e2e8f0',
       }}
     >
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1140px',
           margin: '0 auto',
-          padding: '0.65rem 1.25rem',
+          padding: '0.55rem 1rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        {/* Brand / Title */}
+        {/* Brand */}
         <div
           onClick={() => setTab('home')}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.6rem',
+            gap: '0.5rem',
             cursor: 'pointer',
           }}
         >
           <div
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '6px',
-              background: '#21262d',
-              border: '1px solid #30363d',
+              width: '24px',
+              height: '24px',
+              borderRadius: '4px',
+              background: '#0f172a',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#58a6ff',
+              color: '#ffffff',
             }}
           >
-            <Terminal size={16} />
+            <Terminal size={14} />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.92rem',
+                fontSize: '0.88rem',
                 fontWeight: 700,
-                color: '#e6edf3',
-                letterSpacing: '-0.01em',
+                color: '#0f172a',
               }}
             >
               sfit-labguard
             </span>
             <span
               style={{
-                fontSize: '0.7rem',
+                fontSize: '0.68rem',
                 fontFamily: 'var(--font-mono)',
-                padding: '0.1rem 0.4rem',
+                padding: '0.05rem 0.35rem',
                 borderRadius: '4px',
-                background: '#21262d',
-                color: '#8b949e',
-                border: '1px solid #30363d',
+                background: '#f1f5f9',
+                color: '#64748b',
+                border: '1px solid #e2e8f0',
               }}
             >
               INFT
@@ -88,17 +86,17 @@ export default function Navbar({ currentTab, setTab }) {
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
           <button
             onClick={() => setTab('home')}
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              background: currentTab === 'home' ? '#21262d' : 'transparent',
-              color: currentTab === 'home' ? '#f0f6fc' : '#8b949e',
-              fontWeight: 500,
-              fontSize: '0.84rem',
-              border: currentTab === 'home' ? '1px solid #30363d' : '1px solid transparent',
+              padding: '0.3rem 0.65rem',
+              borderRadius: '5px',
+              background: currentTab === 'home' ? '#f1f5f9' : 'transparent',
+              color: currentTab === 'home' ? '#0f172a' : '#64748b',
+              fontWeight: currentTab === 'home' ? 600 : 500,
+              fontSize: '0.82rem',
+              border: currentTab === 'home' ? '1px solid #e2e8f0' : '1px solid transparent',
             }}
           >
             Workbench
@@ -107,58 +105,58 @@ export default function Navbar({ currentTab, setTab }) {
           <button
             onClick={() => setTab('report')}
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              background: currentTab === 'report' ? '#21262d' : 'transparent',
-              color: currentTab === 'report' ? '#f85149' : '#8b949e',
-              fontWeight: 500,
-              fontSize: '0.84rem',
+              padding: '0.3rem 0.65rem',
+              borderRadius: '5px',
+              background: currentTab === 'report' ? '#fee2e2' : 'transparent',
+              color: currentTab === 'report' ? '#b91c1c' : '#64748b',
+              fontWeight: currentTab === 'report' ? 600 : 500,
+              fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              border: currentTab === 'report' ? '1px solid #30363d' : '1px solid transparent',
+              gap: '0.3rem',
+              border: currentTab === 'report' ? '1px solid #fecaca' : '1px solid transparent',
             }}
           >
-            <AlertCircle size={14} />
+            <AlertCircle size={13} />
             Report Issue
           </button>
 
           <button
             onClick={() => setTab('assets')}
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              background: currentTab === 'assets' ? '#21262d' : 'transparent',
-              color: currentTab === 'assets' ? '#f0f6fc' : '#8b949e',
-              fontWeight: 500,
-              fontSize: '0.84rem',
+              padding: '0.3rem 0.65rem',
+              borderRadius: '5px',
+              background: currentTab === 'assets' ? '#f1f5f9' : 'transparent',
+              color: currentTab === 'assets' ? '#0f172a' : '#64748b',
+              fontWeight: currentTab === 'assets' ? 600 : 500,
+              fontSize: '0.82rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              border: currentTab === 'assets' ? '1px solid #30363d' : '1px solid transparent',
+              gap: '0.3rem',
+              border: currentTab === 'assets' ? '1px solid #e2e8f0' : '1px solid transparent',
             }}
           >
-            <Cpu size={14} />
-            Asset Registry
+            <Cpu size={13} />
+            Assets
           </button>
 
           {user && (
             <button
               onClick={() => setTab('my-tickets')}
               style={{
-                padding: '0.4rem 0.75rem',
-                borderRadius: '6px',
-                background: currentTab === 'my-tickets' ? '#21262d' : 'transparent',
-                color: currentTab === 'my-tickets' ? '#f0f6fc' : '#8b949e',
-                fontWeight: 500,
-                fontSize: '0.84rem',
+                padding: '0.3rem 0.65rem',
+                borderRadius: '5px',
+                background: currentTab === 'my-tickets' ? '#f1f5f9' : 'transparent',
+                color: currentTab === 'my-tickets' ? '#0f172a' : '#64748b',
+                fontWeight: currentTab === 'my-tickets' ? 600 : 500,
+                fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                border: currentTab === 'my-tickets' ? '1px solid #30363d' : '1px solid transparent',
+                gap: '0.3rem',
+                border: currentTab === 'my-tickets' ? '1px solid #e2e8f0' : '1px solid transparent',
               }}
             >
-              <Inbox size={14} />
+              <Inbox size={13} />
               My Tickets
             </button>
           )}
@@ -167,20 +165,20 @@ export default function Navbar({ currentTab, setTab }) {
             <button
               onClick={() => setTab('triage')}
               style={{
-                padding: '0.4rem 0.75rem',
-                borderRadius: '6px',
-                background: currentTab === 'triage' ? '#21262d' : 'transparent',
-                color: currentTab === 'triage' ? '#d29922' : '#8b949e',
-                fontWeight: 600,
-                fontSize: '0.84rem',
+                padding: '0.3rem 0.65rem',
+                borderRadius: '5px',
+                background: currentTab === 'triage' ? '#fef3c7' : 'transparent',
+                color: currentTab === 'triage' ? '#b45309' : '#64748b',
+                fontWeight: currentTab === 'triage' ? 600 : 500,
+                fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                border: currentTab === 'triage' ? '1px solid #30363d' : '1px solid transparent',
+                gap: '0.3rem',
+                border: currentTab === 'triage' ? '1px solid #fde68a' : '1px solid transparent',
               }}
             >
-              <Wrench size={14} />
-              Triage Desk
+              <Wrench size={13} />
+              Triage
             </button>
           )}
 
@@ -188,72 +186,71 @@ export default function Navbar({ currentTab, setTab }) {
             <button
               onClick={() => setTab('analytics')}
               style={{
-                padding: '0.4rem 0.75rem',
-                borderRadius: '6px',
-                background: currentTab === 'analytics' ? '#21262d' : 'transparent',
-                color: currentTab === 'analytics' ? '#bc8cff' : '#8b949e',
-                fontWeight: 600,
-                fontSize: '0.84rem',
+                padding: '0.3rem 0.65rem',
+                borderRadius: '5px',
+                background: currentTab === 'analytics' ? '#f3e8ff' : 'transparent',
+                color: currentTab === 'analytics' ? '#7e22ce' : '#64748b',
+                fontWeight: currentTab === 'analytics' ? 600 : 500,
+                fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                border: currentTab === 'analytics' ? '1px solid #30363d' : '1px solid transparent',
+                gap: '0.3rem',
+                border: currentTab === 'analytics' ? '1px solid #e9d5ff' : '1px solid transparent',
               }}
             >
-              <BarChart3 size={14} />
+              <BarChart3 size={13} />
               SLA Logs
             </button>
           )}
         </div>
 
         {/* User & Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.8rem',
-                  color: '#e6edf3',
-                  padding: '0.25rem 0.6rem',
-                  background: '#21262d',
-                  borderRadius: '6px',
-                  border: '1px solid #30363d',
+                  gap: '0.3rem',
+                  fontSize: '0.78rem',
+                  color: '#334155',
+                  padding: '0.2rem 0.5rem',
+                  background: '#f1f5f9',
+                  borderRadius: '4px',
+                  border: '1px solid #e2e8f0',
                 }}
               >
-                <span style={{ fontFamily: 'var(--font-mono)', color: '#8b949e' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                   {user.usn || user.name.split(' ')[0]}
                 </span>
                 <span
                   style={{
-                    fontSize: '0.7rem',
+                    fontSize: '0.68rem',
                     fontFamily: 'var(--font-mono)',
-                    color: isAdmin ? '#bc8cff' : user.role === 'technician' ? '#d29922' : '#58a6ff',
-                    textTransform: 'uppercase',
+                    color: isAdmin ? '#7e22ce' : user.role === 'technician' ? '#b45309' : '#0369a1',
                   }}
                 >
                   [{user.role}]
                 </span>
               </div>
 
-              {/* Minimal Role Switcher */}
+              {/* Compact Role Switcher */}
               <select
                 value={user.role}
                 onChange={(e) => quickLogin(e.target.value)}
                 style={{
-                  background: '#21262d',
-                  border: '1px solid #30363d',
-                  color: '#8b949e',
-                  fontSize: '0.75rem',
-                  padding: '0.28rem 0.45rem',
-                  borderRadius: '6px',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  color: '#475569',
+                  fontSize: '0.74rem',
+                  padding: '0.22rem 0.4rem',
+                  borderRadius: '4px',
                   fontWeight: 500,
                   cursor: 'pointer',
                   fontFamily: 'var(--font-mono)',
                 }}
-                title="Switch role for evaluation"
+                title="Switch demo role"
               >
                 <option value="student">student</option>
                 <option value="technician">technician</option>
@@ -265,35 +262,35 @@ export default function Navbar({ currentTab, setTab }) {
                 title="Logout"
                 style={{
                   background: 'transparent',
-                  color: '#6e7681',
-                  padding: '0.3rem',
+                  color: '#94a3b8',
+                  padding: '0.25rem',
                   display: 'flex',
                   alignItems: 'center',
                 }}
               >
-                <LogOut size={15} />
+                <LogOut size={14} />
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', gap: '0.3rem' }}>
               <button
                 onClick={() => quickLogin('student')}
                 className="btn-secondary"
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}
+                style={{ fontSize: '0.76rem', padding: '0.25rem 0.55rem' }}
               >
                 Student
               </button>
               <button
                 onClick={() => quickLogin('technician')}
                 className="btn-secondary"
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}
+                style={{ fontSize: '0.76rem', padding: '0.25rem 0.55rem' }}
               >
                 Tech
               </button>
               <button
                 onClick={() => setTab('login')}
                 className="btn-primary"
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.75rem' }}
+                style={{ fontSize: '0.76rem', padding: '0.25rem 0.65rem' }}
               >
                 Sign In
               </button>

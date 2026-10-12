@@ -4,13 +4,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import {
   Cpu,
   Search,
-  Filter,
   QrCode,
   Printer,
   X,
-  MapPin,
-  CheckCircle2,
-  AlertCircle,
   Wrench,
 } from 'lucide-react';
 
@@ -47,49 +43,60 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-subtle)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            marginBottom: '0.2rem',
-          }}
-        >
-          SFIT &bull; Department of Information Technology
+      {/* Top Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            Asset Registry
+          </h1>
+          <span
+            style={{
+              fontSize: '0.7rem',
+              fontFamily: 'var(--font-mono)',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              background: '#f1f5f9',
+              color: '#64748b',
+              fontWeight: 600,
+            }}
+          >
+            {filteredAssets.length} Registered
+          </span>
         </div>
-        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
-          Laboratory Asset Registry
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          Audited computing workstations, network racks, and lab equipment with bench QR stickers.
-        </p>
       </div>
 
       {/* Filter and Search Bar */}
       <div
+        className="tool-panel"
         style={{
+          padding: '0.65rem 0.85rem',
+          marginBottom: '1rem',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '1rem',
+          gap: '0.5rem',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '2rem',
         }}
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
           <select
             className="form-select"
             value={selectedRoom}
             onChange={(e) => setSelectedRoom(e.target.value)}
-            style={{ fontSize: '0.85rem' }}
+            style={{ fontSize: '0.8rem', padding: '0.35rem 0.6rem' }}
           >
             {rooms.map((r) => (
               <option key={r} value={r}>
-                {r === 'All' ? 'All Lab Rooms' : r}
+                {r === 'All' ? 'All Labs' : r}
               </option>
             ))}
           </select>
@@ -98,30 +105,30 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
             className="form-select"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{ fontSize: '0.85rem' }}
+            style={{ fontSize: '0.8rem', padding: '0.35rem 0.6rem' }}
           >
             {categories.map((c) => (
               <option key={c} value={c}>
-                {c === 'All' ? 'All Equipment Categories' : c}
+                {c === 'All' ? 'All Categories' : c}
               </option>
             ))}
           </select>
         </div>
 
         {/* Search */}
-        <div style={{ position: 'relative', minWidth: '260px' }}>
+        <div style={{ position: 'relative', minWidth: '220px', flex: '1', maxWidth: '340px' }}>
           <Search
-            size={16}
-            color="var(--text-subtle)"
-            style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }}
+            size={14}
+            color="#94a3b8"
+            style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)' }}
           />
           <input
             type="text"
             className="form-input"
-            placeholder="Search Asset Tag, CPU, Specs..."
+            placeholder="Search Tag, CPU, Specs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '6px' }}
+            style={{ paddingLeft: '1.9rem', width: '100%', fontSize: '0.82rem', paddingBlock: '0.35rem' }}
           />
         </div>
       </div>
@@ -138,56 +145,54 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
         ))}
       </div>
 
-      {/* Dynamic Bench QR Sticker Modal */}
+      {/* Bench QR Sticker Modal */}
       {qrModalAsset && (
         <div className="modal-overlay" onClick={() => setQrModalAsset(null)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '440px' }}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '420px' }}>
             <div
               style={{
-                padding: '1.25rem 1.5rem',
-                borderBottom: '1px solid var(--border-subtle)',
+                padding: '0.85rem 1.15rem',
+                borderBottom: '1px solid #e2e8f0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
             >
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <QrCode size={18} color="var(--accent-cyan)" />
-                Bench QR Asset Tag
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <QrCode size={16} />
+                Bench QR Tag
               </h3>
               <button
                 onClick={() => setQrModalAsset(null)}
-                style={{ background: 'transparent', color: 'var(--text-muted)' }}
+                style={{ background: 'transparent', color: '#94a3b8' }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            {/* Printable Physical Bench Sticker */}
-            <div style={{ padding: '2rem 1.5rem', textAlign: 'center' }}>
+            <div style={{ padding: '1.25rem', textAlign: 'center' }}>
               <div
                 style={{
                   background: '#ffffff',
-                  color: '#07090e',
-                  padding: '1.5rem',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                  marginBottom: '1.5rem',
-                  border: '2px solid #00f2fe',
+                  color: '#0f172a',
+                  padding: '1.25rem',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  marginBottom: '1rem',
                 }}
               >
-                <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#475569', marginBottom: '0.35rem' }}>
-                  SFIT &bull; Department of Computer Engineering
+                <div style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.25rem' }}>
+                  SFIT &bull; Department of Information Technology
                 </div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#090d16', marginBottom: '0.2rem' }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#0f172a', marginBottom: '0.15rem' }}>
                   {qrModalAsset.assetTag}
                 </div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '1rem' }}>
+                <div style={{ fontSize: '0.74rem', color: '#64748b', marginBottom: '0.85rem' }}>
                   {qrModalAsset.name} &bull; {qrModalAsset.labRoom}
                 </div>
 
-                {/* The QR Code */}
-                <div style={{ display: 'inline-block', padding: '10px', background: '#fff' }}>
+                {/* QR Code */}
+                <div style={{ display: 'inline-block', padding: '8px', background: '#fff' }}>
                   <QRCodeSVG
                     value={JSON.stringify({
                       tag: qrModalAsset.assetTag,
@@ -195,25 +200,21 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
                       room: qrModalAsset.labRoom,
                       systemId: qrModalAsset._id,
                     })}
-                    size={160}
+                    size={150}
                     level="H"
                   />
-                </div>
-
-                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.85rem' }}>
-                  Scan to file instant maintenance ticket or view specs.
                 </div>
               </div>
 
               {/* Actions */}
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   onClick={() => window.print()}
                   className="btn-secondary"
-                  style={{ flex: 1, fontSize: '0.85rem' }}
+                  style={{ flex: 1, fontSize: '0.8rem' }}
                 >
-                  <Printer size={15} />
-                  Print Bench Sticker
+                  <Printer size={14} />
+                  Print Tag
                 </button>
                 <button
                   onClick={() => {
@@ -222,10 +223,10 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
                     onReportFault(a);
                   }}
                   className="btn-primary"
-                  style={{ flex: 1.2, fontSize: '0.85rem' }}
+                  style={{ flex: 1.2, fontSize: '0.8rem' }}
                 >
-                  <Wrench size={15} />
-                  Report Fault on Bench
+                  <Wrench size={14} />
+                  Report Fault
                 </button>
               </div>
             </div>

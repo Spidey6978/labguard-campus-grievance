@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../utils/api.js';
 import {
   Inbox,
-  Clock,
   CheckCircle2,
-  AlertCircle,
-  Wrench,
-  MapPin,
   Cpu,
-  ArrowRight,
-  ShieldAlert,
+  Wrench,
 } from 'lucide-react';
 
-export default function MyTicketsPage({ setTab, onReportClick }) {
+export default function MyTicketsPage({ setTab }) {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +34,7 @@ export default function MyTicketsPage({ setTab, onReportClick }) {
         return <span className="badge badge-amber">In-Progress</span>;
       case 'Reported':
       default:
-        return <span className="badge badge-cyan">Reported / In Queue</span>;
+        return <span className="badge badge-neutral">Reported</span>;
     }
   };
 
@@ -50,89 +45,102 @@ export default function MyTicketsPage({ setTab, onReportClick }) {
       case 'High':
         return <span className="badge badge-amber">High (48h)</span>;
       case 'Medium':
-        return <span className="badge badge-purple">Medium (72h)</span>;
+        return <span className="badge badge-neutral">Medium (72h)</span>;
       default:
-        return <span className="badge badge-cyan">Low (120h)</span>;
+        return <span className="badge badge-neutral">Low</span>;
     }
   };
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-subtle)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            marginBottom: '0.2rem',
-          }}
-        >
-          SFIT &bull; Department of Information Technology
+      {/* Top Header */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            My Filed Tickets
+          </h1>
+          <span
+            style={{
+              fontSize: '0.7rem',
+              fontFamily: 'var(--font-mono)',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              background: '#f1f5f9',
+              color: '#64748b',
+              fontWeight: 600,
+            }}
+          >
+            {tickets.length} Total
+          </span>
         </div>
-        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
-          My Filed Grievances ({tickets.length})
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          Status timeline, diagnostic notes, and SLA resolution tracking for your reported incidents.
-        </p>
+
+        <button onClick={() => setTab('report')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
+          + Report Fault
+        </button>
       </div>
 
       {loading ? (
-        <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          Loading your ticket history...
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b', fontSize: '0.85rem' }}>
+          Loading tickets...
         </div>
       ) : tickets.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '4rem 2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+        <div className="tool-panel" style={{ padding: '3rem 1.5rem', textAlign: 'center', maxWidth: '480px', margin: '2rem auto' }}>
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '42px',
+              height: '42px',
               borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.05)',
+              background: '#f1f5f9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1.5rem',
-              color: 'var(--text-subtle)',
+              margin: '0 auto 0.75rem',
+              color: '#64748b',
             }}
           >
-            <CheckCircle2 size={32} />
+            <CheckCircle2 size={24} />
           </div>
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>
-            No Active Grievances Filed
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem' }}>
+            No tickets filed
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.75rem' }}>
-            All systems reported by you are operational or you haven't logged any hardware breakdowns yet.
+          <p style={{ color: '#64748b', fontSize: '0.82rem', marginBottom: '1rem' }}>
+            You haven't logged any hardware incidents yet.
           </p>
           <button onClick={() => setTab('report')} className="btn-primary">
-            Report a Broken Workstation &rarr;
+            Report an Issue &rarr;
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {tickets.map((t) => (
-            <div key={t._id} className="glass-panel glow-card" style={{ padding: '1.75rem' }}>
+            <div key={t._id} className="tool-panel" style={{ padding: '1.1rem', background: '#ffffff' }}>
               <div
                 style={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
-                  gap: '1rem',
-                  marginBottom: '1rem',
+                  gap: '0.75rem',
+                  marginBottom: '0.5rem',
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                     <span
                       style={{
                         fontFamily: 'var(--font-mono)',
-                        fontWeight: 800,
-                        color: 'var(--accent-cyan)',
-                        fontSize: '0.95rem',
+                        fontWeight: 700,
+                        color: '#7e22ce',
+                        fontSize: '0.82rem',
                       }}
                     >
                       {t.ticketNumber}
@@ -140,15 +148,15 @@ export default function MyTicketsPage({ setTab, onReportClick }) {
                     {getPriorityBadge(t.priority)}
                     {getStatusBadge(t.status)}
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+                  <h3 style={{ fontSize: '0.96rem', fontWeight: 600, color: '#0f172a' }}>
                     {t.title}
                   </h3>
                 </div>
 
-                <div style={{ textAlign: 'right', fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
+                <div style={{ textAlign: 'right', fontSize: '0.74rem', color: '#64748b' }}>
                   <div>Filed {new Date(t.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
-                  <div style={{ color: '#fbbf24', fontWeight: 600, marginTop: '0.2rem' }}>
-                    SLA Target: {new Date(t.slaDeadline).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  <div style={{ color: '#b45309', fontWeight: 600, marginTop: '0.1rem' }}>
+                    SLA: {new Date(t.slaDeadline).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
               </div>
@@ -156,42 +164,27 @@ export default function MyTicketsPage({ setTab, onReportClick }) {
               {/* Workstation & Description */}
               <div
                 style={{
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '1rem 1.25rem',
-                  border: '1px solid var(--border-subtle)',
-                  marginBottom: '1.25rem',
+                  background: '#f8fafc',
+                  borderRadius: '4px',
+                  padding: '0.65rem 0.85rem',
+                  border: '1px solid #e2e8f0',
+                  marginBottom: '0.65rem',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-cyan)', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.4rem' }}>
-                  <Cpu size={15} />
-                  <span>Workstation: {t.asset?.assetTag} &bull; {t.asset?.name} ({t.asset?.labRoom})</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#0369a1', fontSize: '0.78rem', fontWeight: 600, marginBottom: '0.2rem' }}>
+                  <Cpu size={13} />
+                  <span>{t.asset?.assetTag} &bull; {t.asset?.name} ({t.asset?.labRoom})</span>
                 </div>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.5 }}>
+                <p style={{ color: '#475569', fontSize: '0.8rem', lineHeight: 1.45 }}>
                   {t.description}
                 </p>
               </div>
 
-              {/* Technician Diagnostic Note (if in progress or resolved) */}
+              {/* Resolution / Parts Replaced note */}
               {t.partsReplaced && (
-                <div
-                  style={{
-                    padding: '0.85rem 1.25rem',
-                    borderRadius: 'var(--radius-sm)',
-                    background: t.status === 'Resolved' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                    border: t.status === 'Resolved' ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)',
-                    fontSize: '0.85rem',
-                    color: t.status === 'Resolved' ? '#34d399' : '#fbbf24',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                  }}
-                >
-                  <Wrench size={16} />
-                  <div>
-                    <strong>Technician Action: </strong>
-                    {t.partsReplaced}
-                  </div>
+                <div style={{ fontSize: '0.76rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#dcfce7', padding: '0.4rem 0.65rem', borderRadius: '4px', border: '1px solid #bbf7d0' }}>
+                  <Wrench size={13} />
+                  <span><strong>Technician Note:</strong> {t.partsReplaced}</span>
                 </div>
               )}
             </div>

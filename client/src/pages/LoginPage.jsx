@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { Lock, Mail, User, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
+import { Lock, Mail, User, AlertCircle } from 'lucide-react';
 
 export default function LoginPage({ setTab }) {
   const { login, register, quickLogin } = useAuth();
@@ -12,7 +12,7 @@ export default function LoginPage({ setTab }) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [usn, setUsn] = useState('');
-  const [department, setDepartment] = useState('Computer Engineering (CMPN)');
+  const [department, setDepartment] = useState('Information Technology (INFT)');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +48,7 @@ export default function LoginPage({ setTab }) {
       await quickLogin(role);
       if (role === 'admin') setTab('analytics');
       else if (role === 'technician') setTab('triage');
-      else setTab('report');
+      else setTab('home');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,82 +57,68 @@ export default function LoginPage({ setTab }) {
   };
 
   return (
-    <div style={{ maxWidth: '440px', margin: '2rem auto 4rem' }}>
-      <div className="tool-panel" style={{ padding: '1.75rem' }}>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div
-            style={{
-              fontSize: '0.72rem',
-              fontFamily: 'var(--font-mono)',
-              color: 'var(--text-subtle)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              marginBottom: '0.2rem',
-            }}
-          >
+    <div style={{ maxWidth: '400px', margin: '2rem auto 3rem' }}>
+      <div className="tool-panel" style={{ padding: '1.5rem', background: '#ffffff' }}>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            {isRegistering ? 'Student Registration' : 'Sign In'}
+          </h2>
+          <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
             SFIT &bull; Department of Information Technology
           </div>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
-            {isRegistering ? 'Student Registration' : 'Lab Portal Sign In'}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.25rem' }}>
-            {isRegistering
-              ? 'Register with college PID / Roll No to file equipment grievances'
-              : 'Sign in to access fault reporting, triage workbench & SLA logs'}
-          </p>
         </div>
 
-        {/* Quick Demo Shortcuts */}
+        {/* Demo Account Buttons */}
         <div
           style={{
-            background: '#0d1117',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.75rem',
-            border: '1px solid var(--border-subtle)',
-            marginBottom: '1.25rem',
+            background: '#f8fafc',
+            borderRadius: '6px',
+            padding: '0.65rem',
+            border: '1px solid #e2e8f0',
+            marginBottom: '1rem',
           }}
         >
           <div
             style={{
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontFamily: 'var(--font-mono)',
               fontWeight: 600,
-              color: 'var(--text-muted)',
-              marginBottom: '0.5rem',
+              color: '#64748b',
+              marginBottom: '0.35rem',
             }}
           >
-            Demo Accounts:
+            Instant Demo Logins:
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <button
               type="button"
               onClick={() => handleQuick('student')}
               className="btn-secondary"
-              style={{ width: '100%', justifyContent: 'space-between', padding: '0.55rem 0.85rem', fontSize: '0.8rem' }}
+              style={{ width: '100%', justifyContent: 'space-between', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}
             >
-              <span>🎓 Student (Rahul &bull; PID-221089)</span>
-              <span style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>1-Click Login &rarr;</span>
+              <span>Student (Rahul &bull; PID-221089)</span>
+              <span style={{ color: '#0369a1', fontWeight: 600 }}>Login &rarr;</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuick('technician')}
               className="btn-secondary"
-              style={{ width: '100%', justifyContent: 'space-between', padding: '0.55rem 0.85rem', fontSize: '0.8rem', borderColor: 'rgba(245, 158, 11, 0.3)' }}
+              style={{ width: '100%', justifyContent: 'space-between', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}
             >
-              <span>🔧 Lab Technician (Ramesh Kumar)</span>
-              <span style={{ color: '#fbbf24', fontWeight: 700 }}>1-Click Login &rarr;</span>
+              <span>Technician (Ramesh Kumar)</span>
+              <span style={{ color: '#b45309', fontWeight: 600 }}>Login &rarr;</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuick('admin')}
               className="btn-secondary"
-              style={{ width: '100%', justifyContent: 'space-between', padding: '0.55rem 0.85rem', fontSize: '0.8rem', borderColor: 'rgba(168, 85, 247, 0.3)' }}
+              style={{ width: '100%', justifyContent: 'space-between', padding: '0.35rem 0.6rem', fontSize: '0.76rem' }}
             >
-              <span>👔 HOD Admin (Dr. S. N. Sharma)</span>
-              <span style={{ color: '#c084fc', fontWeight: 700 }}>1-Click Login &rarr;</span>
+              <span>HOD Admin (Dr. S. N. Sharma)</span>
+              <span style={{ color: '#7e22ce', fontWeight: 600 }}>Login &rarr;</span>
             </button>
           </div>
         </div>
@@ -140,19 +126,19 @@ export default function LoginPage({ setTab }) {
         {error && (
           <div
             style={{
-              padding: '0.75rem 1rem',
-              borderRadius: 'var(--radius-sm)',
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#f87171',
-              fontSize: '0.85rem',
-              marginBottom: '1.25rem',
+              padding: '0.45rem 0.65rem',
+              borderRadius: '4px',
+              background: '#fee2e2',
+              border: '1px solid #fecaca',
+              color: '#b91c1c',
+              fontSize: '0.78rem',
+              marginBottom: '1rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
+              gap: '0.4rem',
             }}
           >
-            <AlertCircle size={16} />
+            <AlertCircle size={14} />
             <span>{error}</span>
           </div>
         )}
@@ -162,18 +148,14 @@ export default function LoginPage({ setTab }) {
             <>
               <div className="form-group">
                 <label className="form-label">Full Name</label>
-                <div style={{ position: 'relative' }}>
-                  <User size={16} color="var(--text-subtle)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Rahul Sharma"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    style={{ paddingLeft: '2.5rem', width: '100%' }}
-                    required
-                  />
-                </div>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Rahul Sharma"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="form-group">
@@ -192,8 +174,8 @@ export default function LoginPage({ setTab }) {
               <div className="form-group">
                 <label className="form-label">Department</label>
                 <select className="form-select" value={department} onChange={(e) => setDepartment(e.target.value)}>
-                  <option value="Computer Engineering (CMPN)">Computer Engineering (CMPN)</option>
                   <option value="Information Technology (INFT)">Information Technology (INFT)</option>
+                  <option value="Computer Engineering (CMPN)">Computer Engineering (CMPN)</option>
                   <option value="Artificial Intelligence & Data Science (AI&DS)">AI & Data Science (AI&DS)</option>
                   <option value="Electronics & Telecommunication (EXTC)">Electronics & Telecommunication (EXTC)</option>
                   <option value="Mechanical Engineering (MECH)">Mechanical Engineering (MECH)</option>
@@ -203,66 +185,58 @@ export default function LoginPage({ setTab }) {
           )}
 
           <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={16} color="var(--text-subtle)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="email"
-                className="form-input"
-                placeholder="name@sfit.ac.in"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ paddingLeft: '2.5rem', width: '100%' }}
-                required
-              />
-            </div>
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-input"
+              placeholder="name@sfit.ac.in"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label className="form-label">Password</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={16} color="var(--text-subtle)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingLeft: '2.5rem', width: '100%' }}
-                required
-              />
-            </div>
+            <input
+              type="password"
+              className="form-input"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
           <button
             type="submit"
             disabled={loading}
             className="btn-primary"
-            style={{ width: '100%', padding: '0.85rem', marginTop: '0.75rem' }}
+            style={{ width: '100%', padding: '0.5rem', marginTop: '0.4rem' }}
           >
-            {loading ? 'Authenticating...' : isRegistering ? 'Create Student Account &rarr;' : 'Sign In &rarr;'}
+            {loading ? 'Authenticating...' : isRegistering ? 'Register' : 'Sign In'}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.78rem', color: '#64748b' }}>
           {isRegistering ? (
             <span>
               Already registered?{' '}
               <button
                 type="button"
                 onClick={() => setIsRegistering(false)}
-                style={{ background: 'transparent', color: 'var(--accent-cyan)', fontWeight: 700 }}
+                style={{ background: 'transparent', color: '#0369a1', fontWeight: 600 }}
               >
                 Sign In
               </button>
             </span>
           ) : (
             <span>
-              Need a student account?{' '}
+              Need an account?{' '}
               <button
                 type="button"
                 onClick={() => setIsRegistering(true)}
-                style={{ background: 'transparent', color: 'var(--accent-cyan)', fontWeight: 700 }}
+                style={{ background: 'transparent', color: '#0369a1', fontWeight: 600 }}
               >
                 Register Here
               </button>

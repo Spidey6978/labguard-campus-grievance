@@ -1,31 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { apiRequest, playSound } from '../utils/api.js';
-import { useAuth } from '../context/AuthContext.jsx';
 import {
   Wrench,
-  AlertCircle,
-  Clock,
-  CheckCircle2,
-  Filter,
   Search,
-  Cpu,
-  User,
+  CheckCircle2,
   X,
-  Send,
-  Sparkles,
+  Clock,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function TriageDeskPage() {
-  const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedPriority, setSelectedPriority] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTriageTicket, setActiveTriageTicket] = useState(null);
 
-  // Form State in Modal
+  // Triage update modal state
+  const [activeTriageTicket, setActiveTriageTicket] = useState(null);
   const [updateStatus, setUpdateStatus] = useState('In-Progress');
   const [updateNote, setUpdateNote] = useState('');
   const [updateParts, setUpdateParts] = useState('');
@@ -71,7 +63,7 @@ export default function TriageDeskPage() {
       playSound('success');
       if (updateStatus === 'Resolved') {
         try {
-          confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+          confetti({ particleCount: 40, spread: 40, origin: { y: 0.6 } });
         } catch (e) {}
       }
 
@@ -101,48 +93,59 @@ export default function TriageDeskPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-subtle)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            marginBottom: '0.2rem',
-          }}
-        >
-          SFIT &bull; Department of Information Technology
-        </div>
-        <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#f0f6fc', letterSpacing: '-0.02em' }}>
-          Hardware Maintenance Triage Queue
-        </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          Active incident queue. Update repair states, record replaced components, and certify bench restoration.
-        </p>
-      </div>
-
-      {/* Filters */}
+      {/* Top Header */}
       <div
         style={{
           display: 'flex',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '2rem',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
         }}
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            Triage Desk
+          </h1>
+          <span
+            style={{
+              fontSize: '0.7rem',
+              fontFamily: 'var(--font-mono)',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              background: '#fef3c7',
+              color: '#b45309',
+              fontWeight: 600,
+            }}
+          >
+            {filteredTickets.length} in Queue
+          </span>
+        </div>
+      </div>
+
+      {/* Filters Bar */}
+      <div
+        className="tool-panel"
+        style={{
+          padding: '0.65rem 0.85rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
           <select
             className="form-select"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            style={{ fontSize: '0.85rem' }}
+            style={{ fontSize: '0.8rem', padding: '0.35rem 0.6rem' }}
           >
-            <option value="All">All Ticket States</option>
-            <option value="Reported">Reported / Open</option>
+            <option value="All">All States</option>
+            <option value="Reported">Reported</option>
             <option value="In-Progress">In-Progress</option>
             <option value="Resolved">Resolved</option>
           </select>
@@ -151,7 +154,7 @@ export default function TriageDeskPage() {
             className="form-select"
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value)}
-            style={{ fontSize: '0.85rem' }}
+            style={{ fontSize: '0.8rem', padding: '0.35rem 0.6rem' }}
           >
             <option value="All">All Priorities</option>
             <option value="Critical">Critical (24h)</option>
@@ -161,11 +164,11 @@ export default function TriageDeskPage() {
           </select>
         </div>
 
-        <div style={{ position: 'relative', minWidth: '260px' }}>
+        <div style={{ position: 'relative', minWidth: '220px', flex: '1', maxWidth: '340px' }}>
           <Search
-            size={16}
-            color="var(--text-subtle)"
-            style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }}
+            size={14}
+            color="#94a3b8"
+            style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)' }}
           />
           <input
             type="text"
@@ -173,38 +176,38 @@ export default function TriageDeskPage() {
             placeholder="Search Ticket, Asset, Reporter..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.5rem', width: '100%', borderRadius: '6px' }}
+            style={{ paddingLeft: '1.9rem', width: '100%', fontSize: '0.82rem', paddingBlock: '0.35rem' }}
           />
         </div>
       </div>
 
       {/* Ticket List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {filteredTickets.map((t) => (
-          <div key={t._id} className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div key={t._id} className="tool-panel" style={{ padding: '1rem', background: '#ffffff' }}>
             <div
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
-                gap: '1rem',
-                marginBottom: '0.85rem',
+                gap: '0.75rem',
+                marginBottom: '0.5rem',
               }}
             >
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, color: 'var(--accent-cyan)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#7e22ce', fontSize: '0.82rem' }}>
                     {t.ticketNumber}
                   </span>
-                  <span className={`badge ${t.priority === 'Critical' ? 'badge-red' : t.priority === 'High' ? 'badge-amber' : 'badge-cyan'}`}>
-                    {t.priority} SLA
+                  <span className={`badge ${t.priority === 'Critical' ? 'badge-red' : t.priority === 'High' ? 'badge-amber' : 'badge-neutral'}`}>
+                    {t.priority}
                   </span>
-                  <span className={`badge ${t.status === 'Resolved' ? 'badge-green' : t.status === 'In-Progress' ? 'badge-amber' : 'badge-cyan'}`}>
+                  <span className={`badge ${t.status === 'Resolved' ? 'badge-green' : t.status === 'In-Progress' ? 'badge-amber' : 'badge-neutral'}`}>
                     {t.status}
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
+                <h3 style={{ fontSize: '0.96rem', fontWeight: 600, color: '#0f172a' }}>
                   {t.title}
                 </h3>
               </div>
@@ -212,14 +215,14 @@ export default function TriageDeskPage() {
               <button
                 onClick={() => handleOpenTriage(t)}
                 className="btn-primary"
-                style={{ fontSize: '0.82rem', padding: '0.5rem 1rem' }}
+                style={{ fontSize: '0.76rem', padding: '0.3rem 0.65rem' }}
               >
-                <Wrench size={14} />
-                Update Triage &rarr;
+                <Wrench size={13} />
+                <span>Update Triage</span>
               </button>
             </div>
 
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+            <div style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.65rem' }}>
               {t.description}
             </div>
 
@@ -227,16 +230,16 @@ export default function TriageDeskPage() {
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: '1.5rem',
-                fontSize: '0.8rem',
-                color: 'var(--text-subtle)',
-                paddingTop: '0.75rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                gap: '1rem',
+                fontSize: '0.76rem',
+                color: '#64748b',
+                paddingTop: '0.5rem',
+                borderTop: '1px solid #f1f5f9',
               }}
             >
-              <span>Workstation: <strong style={{ color: '#fff' }}>{t.asset?.assetTag}</strong> ({t.asset?.labRoom})</span>
-              <span>Reporter: <strong style={{ color: '#fff' }}>{t.reportedBy?.name}</strong> ({t.reportedBy?.usn || 'Staff'})</span>
-              <span>Assigned Tech: <strong style={{ color: '#fbbf24' }}>{t.assignedTo?.name || 'Unassigned'}</strong></span>
+              <span>Asset: <strong style={{ color: '#0f172a', fontFamily: 'var(--font-mono)' }}>{t.asset?.assetTag}</strong> ({t.asset?.labRoom})</span>
+              <span>Reporter: <strong style={{ color: '#0f172a' }}>{t.reportedBy?.name}</strong></span>
+              <span>Assigned: <strong style={{ color: '#b45309' }}>{t.assignedTo?.name || 'Unassigned'}</strong></span>
               <span>Target: <strong>{new Date(t.slaDeadline).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong></span>
             </div>
           </div>
@@ -246,33 +249,33 @@ export default function TriageDeskPage() {
       {/* Triage Update Modal */}
       {activeTriageTicket && (
         <div className="modal-overlay" onClick={() => setActiveTriageTicket(null)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '460px' }}>
             <div
               style={{
-                padding: '1.5rem 1.75rem',
-                borderBottom: '1px solid var(--border-subtle)',
+                padding: '0.85rem 1.15rem',
+                borderBottom: '1px solid #e2e8f0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
             >
               <div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 800 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#7e22ce', fontWeight: 700 }}>
                   {activeTriageTicket.ticketNumber}
                 </span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff', marginTop: '0.2rem' }}>
-                  Technician Action Desk
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a' }}>
+                  Update Triage State
                 </h3>
               </div>
               <button
                 onClick={() => setActiveTriageTicket(null)}
-                style={{ background: 'transparent', color: 'var(--text-muted)' }}
+                style={{ background: 'transparent', color: '#94a3b8' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveTriage} style={{ padding: '1.75rem' }}>
+            <form onSubmit={handleSaveTriage} style={{ padding: '1.15rem' }}>
               <div className="form-group">
                 <label className="form-label">Workflow Status</label>
                 <select
@@ -280,36 +283,36 @@ export default function TriageDeskPage() {
                   value={updateStatus}
                   onChange={(e) => setUpdateStatus(e.target.value)}
                 >
-                  <option value="In-Progress">In-Progress (Investigating / Requisitioning Spares)</option>
-                  <option value="Resolved">Resolved (Repaired &amp; Stress Tested Operational)</option>
-                  <option value="Closed">Closed (Bench Handover Complete)</option>
+                  <option value="Reported">Reported</option>
+                  <option value="In-Progress">In-Progress</option>
+                  <option value="Resolved">Resolved / Bench Certified</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Technician Diagnostic Action Log</label>
+                <label className="form-label">Replaced Parts (Optional)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Replaced 8GB DDR5 module, SATA lead"
+                  value={updateParts}
+                  onChange={(e) => setUpdateParts(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Technician Note</label>
                 <textarea
                   className="form-textarea"
                   rows={3}
-                  placeholder="e.g. Inspected RAM sticks; ran MemTest86; re-flashed BIOS firmware..."
+                  placeholder="Diagnostic note, MemTest86 results, etc."
                   value={updateNote}
                   onChange={(e) => setUpdateNote(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Parts Replaced / Hardware Consumables</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. 1x 8GB DDR5 5600MHz RAM module, 1x Cat6 Patch Lead"
-                  value={updateParts}
-                  onChange={(e) => setUpdateParts(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
                 <button
                   type="button"
                   onClick={() => setActiveTriageTicket(null)}
@@ -324,7 +327,7 @@ export default function TriageDeskPage() {
                   className="btn-primary"
                   style={{ flex: 1.5 }}
                 >
-                  {submitting ? 'Saving...' : 'Commit Maintenance Log &rarr;'}
+                  {submitting ? 'Saving...' : 'Commit Status'}
                 </button>
               </div>
             </form>
