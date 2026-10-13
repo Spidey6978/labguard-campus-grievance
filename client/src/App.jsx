@@ -45,6 +45,7 @@ function MainApp() {
             assets={assets}
             setTab={setCurrentTab}
             onSelectAsset={handleReportFaultOnAsset}
+            onTicketDeleted={loadAssets}
           />
         )}
 
@@ -73,7 +74,9 @@ function MainApp() {
           />
         )}
 
-        {currentTab === 'triage' && <TriageDeskPage />}
+        {currentTab === 'triage' && (
+          <TriageDeskPage onTicketDeleted={loadAssets} />
+        )}
 
         {currentTab === 'analytics' && <AnalyticsPage />}
 

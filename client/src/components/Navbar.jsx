@@ -162,7 +162,7 @@ export default function Navbar({ currentTab, setTab }) {
             </button>
           )}
 
-          {isTechnician && (
+          {(isTechnician || isAdmin) && (
             <button
               onClick={() => setTab('triage')}
               style={{

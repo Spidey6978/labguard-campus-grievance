@@ -6,10 +6,11 @@ import {
   CheckCircle2,
   X,
   Clock,
+  Trash2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function TriageDeskPage() {
+export default function TriageDeskPage({ onTicketDeleted }) {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState('All');
@@ -22,6 +23,7 @@ export default function TriageDeskPage() {
   const [updateNote, setUpdateNote] = useState('');
   const [updateParts, setUpdateParts] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchTickets = async () => {
     try {
@@ -45,6 +47,38 @@ export default function TriageDeskPage() {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return { text: `⏱ ${hours}h ${mins}m left`, urgent: hours < 12, breached: false };
+  };
+
+  const handleDeleteTicket = async (ticket) => {
+    if (!ticket) return;
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT FRAUDULENT TICKET DELETION\n\n` +
+      `Are you sure you want to delete ticket ${ticket.ticketNumber}?\n` +
+      `• Issue: "${ticket.title}"\n` +
+      `• Workstation: ${ticket.asset?.assetTag || 'N/A'} (${ticket.asset?.labRoom || 'N/A'})\n` +
+      `• Reporter: ${ticket.reportedBy?.name || 'N/A'}\n\n` +
+      `This will permanently purge this fraudulent/duplicate ticket from the system and restore the workstation status back to Operational.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(ticket._id);
+    try {
+      const res = await apiRequest(`/tickets/${ticket._id}`, {
+        method: 'DELETE',
+      });
+      if (res.success) {
+        playSound('success');
+        setTickets((prev) => prev.filter((t) => t._id !== ticket._id));
+        if (activeTriageTicket?._id === ticket._id) {
+          setActiveTriageTicket(null);
+        }
+        if (onTicketDeleted) onTicketDeleted();
+      }
+    } catch (err) {
+      alert(`Failed to delete ticket: ${err.message}`);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const handleOpenTriage = (ticket) => {
@@ -240,14 +274,37 @@ export default function TriageDeskPage() {
                 </h3>
               </div>
 
-              <button
-                onClick={() => handleOpenTriage(t)}
-                className="btn-primary"
-                style={{ fontSize: '0.76rem', padding: '0.3rem 0.65rem' }}
-              >
-                <Wrench size={13} />
-                <span>Update Triage</span>
-              </button>
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <button
+                  onClick={() => handleOpenTriage(t)}
+                  className="btn-primary"
+                  style={{ fontSize: '0.76rem', padding: '0.3rem 0.65rem' }}
+                >
+                  <Wrench size={13} />
+                  <span>Update Triage</span>
+                </button>
+                <button
+                  onClick={() => handleDeleteTicket(t)}
+                  disabled={deletingId === t._id}
+                  title="Purge fraudulent, duplicate or spam report"
+                  style={{
+                    fontSize: '0.76rem',
+                    padding: '0.3rem 0.55rem',
+                    background: '#fff1f2',
+                    color: '#e11d48',
+                    border: '1px solid #fecdd3',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <Trash2 size={13} />
+                  <span>{deletingId === t._id ? 'Deleting...' : 'Dismiss Fraud'}</span>
+                </button>
+              </div>
             </div>
 
             <div style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.65rem' }}>
@@ -340,23 +397,58 @@ export default function TriageDeskPage() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '1.25rem',
+                  borderTop: '1px solid #f1f5f9',
+                  paddingTop: '0.85rem',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                }}
+              >
                 <button
                   type="button"
-                  onClick={() => setActiveTriageTicket(null)}
-                  className="btn-secondary"
-                  style={{ flex: 1 }}
+                  onClick={() => handleDeleteTicket(activeTriageTicket)}
+                  disabled={deletingId === activeTriageTicket?._id}
+                  style={{
+                    background: '#fff1f2',
+                    border: '1px solid #fecdd3',
+                    color: '#e11d48',
+                    borderRadius: '4px',
+                    padding: '0.4rem 0.65rem',
+                    fontSize: '0.76rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
                 >
-                  Cancel
+                  <Trash2 size={13} />
+                  <span>{deletingId === activeTriageTicket?._id ? 'Deleting...' : 'Delete as Fraudulent'}</span>
                 </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="btn-primary"
-                  style={{ flex: 1.5 }}
-                >
-                  {submitting ? 'Saving...' : 'Commit Status'}
-                </button>
+
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTriageTicket(null)}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.78rem' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="btn-primary"
+                    style={{ fontSize: '0.78rem' }}
+                  >
+                    {submitting ? 'Saving...' : 'Commit Status'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

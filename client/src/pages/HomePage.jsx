@@ -12,11 +12,12 @@ import {
   ShieldAlert,
   BarChart3,
   Layers,
+  Trash2,
 } from 'lucide-react';
 import { apiRequest } from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export default function HomePage({ assets, setTab, onSelectAsset }) {
+export default function HomePage({ assets, setTab, onSelectAsset, onTicketDeleted }) {
   const { user, quickLogin } = useAuth();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -24,6 +25,7 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
   const [activeView, setActiveView] = useState('assets');
   const [tickets, setTickets] = useState([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     async function fetchTickets() {
@@ -46,6 +48,33 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return { text: `${hours}h ${mins}m left`, urgent: hours < 12 };
+  };
+
+  const handleDeleteTicket = async (ticket) => {
+    if (!ticket) return;
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT FRAUDULENT TICKET DELETION\n\n` +
+      `Are you sure you want to delete ticket ${ticket.ticketNumber}?\n` +
+      `• Issue: "${ticket.title}"\n` +
+      `• Workstation: ${ticket.asset?.assetTag || 'N/A'}\n\n` +
+      `This will permanently purge this fraudulent report from the SLA queue and automatically restore the workstation status.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(ticket._id);
+    try {
+      const res = await apiRequest(`/tickets/${ticket._id}`, {
+        method: 'DELETE',
+      });
+      if (res.success) {
+        setTickets((prev) => prev.filter((t) => t._id !== ticket._id));
+        if (onTicketDeleted) onTicketDeleted();
+      }
+    } catch (err) {
+      alert(`Failed to delete ticket: ${err.message}`);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // Student specific tickets (Veer • PID-241034)
@@ -592,7 +621,7 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
                     <th style={{ width: '100px' }}>Priority</th>
                     <th style={{ width: '110px' }}>Status</th>
                     <th style={{ width: '125px' }}>SLA Window</th>
-                    <th style={{ textAlign: 'right', width: '90px' }}>Action</th>
+                    <th style={{ textAlign: 'right', width: '130px' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -656,13 +685,34 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
                             )}
                           </td>
                           <td style={{ textAlign: 'right' }}>
-                            <button
-                              onClick={() => setTab('triage')}
-                              className="btn-primary"
-                              style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
-                            >
-                              Triage &rarr;
-                            </button>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.3rem', alignItems: 'center' }}>
+                              <button
+                                onClick={() => setTab('triage')}
+                                className="btn-primary"
+                                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                              >
+                                Triage &rarr;
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTicket(t)}
+                                disabled={deletingId === t._id}
+                                title="Dismiss / Delete fraudulent ticket"
+                                style={{
+                                  fontSize: '0.72rem',
+                                  padding: '0.2rem 0.45rem',
+                                  background: '#fff1f2',
+                                  color: '#e11d48',
+                                  border: '1px solid #fecdd3',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -881,6 +931,127 @@ export default function HomePage({ assets, setTab, onSelectAsset }) {
             </div>
           </div>
         </div>
+
+        {/* Active Grievances & Fraudulent Ticket Audit (HOD) */}
+        {urgentTickets.length > 0 && (
+          <div style={{ marginBottom: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.6rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <ShieldAlert size={15} color="#dc2626" />
+                <h2 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                  Active Grievances &amp; Fraudulent Ticket Audit
+                </h2>
+              </div>
+              <span style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+                {urgentTickets.length} pending incident{urgentTickets.length === 1 ? '' : 's'}
+              </span>
+            </div>
+
+            <div className="tool-panel" style={{ overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '110px' }}>Ticket #</th>
+                      <th style={{ width: '120px' }}>Workstation</th>
+                      <th>Grievance Symptom</th>
+                      <th style={{ width: '140px' }}>Reporter</th>
+                      <th style={{ width: '90px' }}>Priority</th>
+                      <th style={{ width: '100px' }}>Status</th>
+                      <th style={{ textAlign: 'right', width: '130px' }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {urgentTickets.map((t) => (
+                      <tr key={t._id}>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#7e22ce' }}>
+                          {t.ticketNumber}
+                        </td>
+                        <td>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#0369a1' }}>
+                            {t.asset?.assetTag || '-'}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {t.asset?.labRoom}
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{t.title}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {t.description?.slice(0, 48)}...
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.76rem' }}>
+                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{t.reportedBy?.name || '-'}</div>
+                          <div style={{ color: '#64748b', fontFamily: 'var(--font-mono)' }}>
+                            {t.reportedBy?.usn || t.reportedBy?.email || ''}
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              t.priority === 'Critical'
+                                ? 'badge-red'
+                                : t.priority === 'High'
+                                ? 'badge-amber'
+                                : 'badge-neutral'
+                            }`}
+                          >
+                            {t.priority}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`badge ${t.status === 'In-Progress' ? 'badge-amber' : 'badge-neutral'}`}>
+                            {t.status}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.3rem', alignItems: 'center' }}>
+                            <button
+                              onClick={() => setTab('triage')}
+                              className="btn-secondary"
+                              style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}
+                            >
+                              Triage
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTicket(t)}
+                              disabled={deletingId === t._id}
+                              title="Purge fraudulent ticket"
+                              style={{
+                                fontSize: '0.72rem',
+                                padding: '0.2rem 0.45rem',
+                                background: '#fff1f2',
+                                color: '#e11d48',
+                                border: '1px solid #fecdd3',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.2rem',
+                                fontWeight: 600,
+                              }}
+                            >
+                              <Trash2 size={12} />
+                              <span>Fraud</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Master Department Systems Audit Table */}
         <div>

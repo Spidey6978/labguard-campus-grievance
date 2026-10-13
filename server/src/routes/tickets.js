@@ -273,4 +273,55 @@ router.put('/:id/status', protect, authorize('technician', 'admin'), async (req,
   }
 });
 
+// @route   DELETE /api/tickets/:id
+// @desc    Permanently delete a ticket (fraudulent / invalid / spam report) - Technician and HOD Admin only
+router.delete('/:id', protect, authorize('technician', 'admin'), async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const ticketNumber = ticket.ticketNumber;
+    const assetId = ticket.asset;
+
+    // Synchronize asset health and telemetry counters
+    if (assetId) {
+      const asset = await Asset.findById(assetId);
+      if (asset) {
+        if (['Reported', 'Assigned', 'In-Progress'].includes(ticket.status)) {
+          asset.activeTickets = Math.max(0, (asset.activeTickets || 1) - 1);
+          asset.totalIncidents = Math.max(0, (asset.totalIncidents || 1) - 1);
+
+          // Check if any other open incidents remain on this workstation
+          const otherActive = await Ticket.countDocuments({
+            asset: assetId,
+            _id: { $ne: ticket._id },
+            status: { $in: ['Reported', 'Assigned', 'In-Progress'] },
+          });
+
+          if (otherActive === 0) {
+            asset.status = 'Operational';
+          }
+        } else {
+          // If already resolved or closed, decrement incident history counter
+          asset.totalIncidents = Math.max(0, (asset.totalIncidents || 1) - 1);
+        }
+        await asset.save();
+      }
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: `Ticket ${ticketNumber} permanently deleted as fraudulent/invalid. Workstation health counters synchronized.`,
+      ticketId: req.params.id,
+      ticketNumber,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;

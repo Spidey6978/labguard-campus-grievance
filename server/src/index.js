@@ -52,6 +52,7 @@ const getApiCatalog = (req) => {
     version: '2.0.0',
     exposedRoutes: {
       tickets: `${baseUrl}/api/tickets`,
+      ticketDelete: `${baseUrl}/api/tickets/:id [DELETE - Tech/HOD Auth]`,
       assets: `${baseUrl}/api/assets`,
       analytics: `${baseUrl}/api/analytics`,
       analyticsOverview: `${baseUrl}/api/analytics/overview`,

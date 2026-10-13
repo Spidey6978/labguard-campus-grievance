@@ -127,6 +127,10 @@ export function renderApiExplorerHtml(baseUrl, catalog) {
       background: var(--accent-post-bg);
       color: var(--accent-post);
     }
+    .method-delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
     .endpoint-path {
       font-family: var(--font-mono);
       color: #334155;
@@ -292,6 +296,13 @@ export function renderApiExplorerHtml(baseUrl, catalog) {
         <div class="endpoint-item" onclick="selectEndpoint('GET', '/api/assets?labRoom=Lab 304 - Computer Center 3')">
           <span class="method-badge method-get">GET</span>
           <span class="endpoint-path">/api/assets?labRoom=CC3</span>
+        </div>
+
+        <div class="section-label">Fraudulent Ticket Triage (Admin/Tech)</div>
+
+        <div class="endpoint-item" onclick="selectEndpoint('DELETE', '/api/tickets/:id')">
+          <span class="method-badge method-delete">DEL</span>
+          <span class="endpoint-path">/api/tickets/:id (Purge Fraud)</span>
         </div>
 
         <div class="section-label">Demo Credentials</div>
