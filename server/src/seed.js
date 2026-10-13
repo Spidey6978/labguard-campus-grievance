@@ -261,7 +261,28 @@ export async function seedData() {
       ],
     });
 
-    console.log('✅ Demo Maintenance Grievances seeded (Critical, High, In-Progress, Resolved)');
+    // Ticket 5: SLA Breached / Overdue (Demonstrates SLA Breach Escalation)
+    await Ticket.create({
+      ticketNumber: 'TKT26-BREACH01',
+      asset: assets[1]._id, // CC3-PC-15
+      reportedBy: student._id,
+      title: 'Power supply coil whine and unexpected shutdown during compile',
+      description: 'PSU fan seized up. Workstation shuts down under full CPU compile load. SLA breached past 24h deadline.',
+      issueCategory: 'Electrical / UPS / Power Trip',
+      priority: 'Critical',
+      status: 'Reported',
+      slaDeadline: new Date(Date.now() - 3 * 60 * 60 * 1000), // Breached 3 hours ago
+      timeline: [
+        {
+          status: 'Reported',
+          note: 'Incident reported by Veer (PID-241034) during afternoon practical session.',
+          updatedBy: student._id,
+          timestamp: new Date(Date.now() - 27 * 60 * 60 * 1000),
+        },
+      ],
+    });
+
+    console.log('✅ Demo Maintenance Grievances seeded (Critical, High, In-Progress, Resolved, Breached)');
     console.log('🎉 LabGuard Database Seed Complete!');
   } catch (error) {
     console.error('❌ Seeding error:', error);

@@ -38,6 +38,15 @@ export default function TriageDeskPage() {
     fetchTickets();
   }, []);
 
+  const formatSlaRemaining = (deadline) => {
+    if (!deadline) return null;
+    const diff = new Date(deadline) - new Date();
+    if (diff <= 0) return { text: '🚨 SLA BREACHED', urgent: true, breached: true };
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { text: `⏱ ${hours}h ${mins}m left`, urgent: hours < 12, breached: false };
+  };
+
   const handleOpenTriage = (ticket) => {
     setActiveTriageTicket(ticket);
     setUpdateStatus(ticket.status === 'Reported' ? 'In-Progress' : ticket.status);
@@ -206,6 +215,25 @@ export default function TriageDeskPage() {
                   <span className={`badge ${t.status === 'Resolved' ? 'badge-green' : t.status === 'In-Progress' ? 'badge-amber' : 'badge-neutral'}`}>
                     {t.status}
                   </span>
+                  {(() => {
+                    const sla = formatSlaRemaining(t.slaDeadline);
+                    if (!sla || t.status === 'Resolved' || t.status === 'Closed') return null;
+                    return (
+                      <span
+                        style={{
+                          fontSize: '0.72rem',
+                          fontFamily: 'var(--font-mono)',
+                          color: sla.breached ? '#ffffff' : sla.urgent ? '#dc2626' : '#b45309',
+                          background: sla.breached ? '#dc2626' : sla.urgent ? '#fee2e2' : '#fef3c7',
+                          fontWeight: 700,
+                          padding: '0.12rem 0.45rem',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        {sla.text}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <h3 style={{ fontSize: '0.96rem', fontWeight: 600, color: '#0f172a' }}>
                   {t.title}
