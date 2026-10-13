@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import assetRoutes from './routes/assets.js';
 import ticketRoutes from './routes/tickets.js';
 import analyticsRoutes from './routes/analytics.js';
+import { renderApiExplorerHtml } from './utils/apiExplorer.js';
 
 dotenv.config();
 
@@ -65,8 +66,23 @@ const getApiCatalog = (req) => {
   };
 };
 
-app.get('/', (req, res) => res.json(getApiCatalog(req)));
-app.get('/api', (req, res) => res.json(getApiCatalog(req)));
+const handleRootOrApi = (req, res) => {
+  const host = req.get('host') || `localhost:${PORT}`;
+  const protocol = req.protocol || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const catalog = getApiCatalog(req);
+
+  // If browser requests HTML and format is not explicitly json:
+  if (req.query.format !== 'json' && req.accepts('html')) {
+    return res.send(renderApiExplorerHtml(baseUrl, catalog));
+  }
+
+  // Otherwise return raw JSON:
+  res.json(catalog);
+};
+
+app.get('/', handleRootOrApi);
+app.get('/api', handleRootOrApi);
 
 // Exposed users route
 app.get('/api/users', async (req, res) => {
