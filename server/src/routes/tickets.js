@@ -1,6 +1,8 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import Ticket from '../models/Ticket.js';
 import Asset from '../models/Asset.js';
+import User from '../models/User.js';
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -144,10 +146,28 @@ router.get('/', async (req, res) => {
 });
 
 // @route   GET /api/tickets/my
-// @desc    Get tickets reported by logged-in student
-router.get('/my', protect, async (req, res) => {
+// @desc    Get tickets reported by logged-in student (with demo fallback)
+router.get('/my', async (req, res) => {
   try {
-    const tickets = await Ticket.find({ reportedBy: req.user._id })
+    let studentId = null;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      const token = req.headers.authorization.split(' ')[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'labguard_super_secret_jwt_key_2026');
+        studentId = decoded.id;
+      } catch (e) {}
+    }
+
+    let query = {};
+    if (studentId) {
+      query.reportedBy = studentId;
+    } else {
+      const veerUser = await User.findOne({ email: 'veer@sfit.ac.in' });
+      if (veerUser) query.reportedBy = veerUser._id;
+    }
+
+    const tickets = await Ticket.find(query)
       .populate('asset', 'assetTag name labRoom category status specs')
       .populate('assignedTo', 'name phone')
       .sort({ createdAt: -1 });
@@ -158,18 +178,22 @@ router.get('/my', protect, async (req, res) => {
   }
 });
 
-// @route   GET /api/tickets/:id
-// @desc    Get single ticket with full timeline
-router.get('/:id', protect, async (req, res) => {
+// @route   GET /api/tickets/:idOrNumber
+// @desc    Get single ticket with full timeline by Mongo ID or ticketNumber (e.g. TKT26-CRIT14)
+router.get('/:idOrNumber', async (req, res) => {
   try {
-    const ticket = await Ticket.findById(req.params.id)
+    const param = req.params.idOrNumber.trim();
+    const isObjectId = param.match(/^[0-9a-fA-F]{24}$/);
+    const query = isObjectId ? { _id: param } : { ticketNumber: param.toUpperCase() };
+
+    const ticket = await Ticket.findOne(query)
       .populate('asset', 'assetTag name labRoom category specs status ipAddress')
       .populate('reportedBy', 'name usn department email phone')
       .populate('assignedTo', 'name phone email')
       .populate('timeline.updatedBy', 'name role');
 
     if (!ticket) {
-      return res.status(404).json({ success: false, message: 'Ticket not found' });
+      return res.status(404).json({ success: false, message: `Ticket '${param}' not found` });
     }
 
     res.json({ success: true, data: ticket });
