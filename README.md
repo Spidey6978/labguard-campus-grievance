@@ -74,3 +74,5 @@ npm run dev
    * `MONGODB_URI`: Your MongoDB Atlas connection URI.
    * `JWT_SECRET`: Any custom secret string.
 3. Deploy!
+
+really js some random bs i had to cook up for clg submissions
