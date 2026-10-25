@@ -1,7 +1,7 @@
 import React from 'react';
-import { MapPin, QrCode } from 'lucide-react';
+import { MapPin, QrCode, Trash2 } from 'lucide-react';
 
-export default function AssetCard({ asset, onViewQR, onReportFault }) {
+export default function AssetCard({ asset, onViewQR, onReportFault, onDeleteAsset }) {
   if (!asset) return null;
 
   const { assetTag, name, labRoom, category, specs, status, activeTickets, totalIncidents } = asset;
@@ -53,7 +53,30 @@ export default function AssetCard({ asset, onViewQR, onReportFault }) {
             </span>
           </div>
 
-          {getStatusBadge(status)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            {getStatusBadge(status)}
+            {onDeleteAsset && (
+              <button
+                type="button"
+                onClick={() => onDeleteAsset(asset)}
+                title={`Decommission & delete ${assetTag}`}
+                style={{
+                  background: 'transparent',
+                  color: '#94a3b8',
+                  padding: '0.2rem',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#dc2626')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Name & Specs */}

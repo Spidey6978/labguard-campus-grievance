@@ -274,12 +274,24 @@ router.put('/:id/status', protect, authorize('technician', 'admin'), async (req,
 });
 
 // @route   DELETE /api/tickets/:id
-// @desc    Permanently delete a ticket (fraudulent / invalid / spam report) - Technician and HOD Admin only
-router.delete('/:id', protect, authorize('technician', 'admin'), async (req, res) => {
+// @desc    Permanently delete or withdraw a ticket (Students can withdraw their own 'Reported' tickets; Technicians & Admins can delete any ticket)
+router.delete('/:id', protect, async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
       return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const isOwner = ticket.reportedBy && ticket.reportedBy.toString() === req.user._id.toString();
+    const isStaff = ['technician', 'admin'].includes(req.user.role);
+
+    if (!isStaff) {
+      if (!isOwner) {
+        return res.status(403).json({ success: false, message: 'Access denied. You can only withdraw your own tickets.' });
+      }
+      if (ticket.status !== 'Reported') {
+        return res.status(400).json({ success: false, message: 'Cannot withdraw ticket once triage has commenced.' });
+      }
     }
 
     const ticketNumber = ticket.ticketNumber;

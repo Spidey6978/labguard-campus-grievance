@@ -17,7 +17,7 @@ import {
 import { apiRequest } from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export default function HomePage({ assets, setTab, onSelectAsset, onTicketDeleted }) {
+export default function HomePage({ assets, setTab, onSelectAsset, onTicketDeleted, onAssetDeleted }) {
   const { user, quickLogin } = useAuth();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -26,6 +26,28 @@ export default function HomePage({ assets, setTab, onSelectAsset, onTicketDelete
   const [tickets, setTickets] = useState([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+
+  const handleDeleteAsset = async (asset) => {
+    if (!asset) return;
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT HARDWARE DECOMMISSION\n\n` +
+      `Are you sure you want to permanently decommission and delete ${asset.assetTag} (${asset.name}) from ${asset.labRoom}?\n\n` +
+      `This will remove the workstation from all institutional inventory and purge all linked incident tickets.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await apiRequest(`/assets/${asset._id}`, {
+        method: 'DELETE',
+      });
+      if (res.success) {
+        if (onAssetDeleted) onAssetDeleted();
+      }
+    } catch (err) {
+      alert(`Failed to delete asset: ${err.message}`);
+    }
+  };
+
 
   useEffect(() => {
     async function fetchTickets() {
@@ -212,6 +234,9 @@ export default function HomePage({ assets, setTab, onSelectAsset, onTicketDelete
           </div>
 
           <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button onClick={() => setTab('home')} className="btn-secondary" style={{ fontSize: '0.8rem' }}>
+              &larr; Portal Home
+            </button>
             <button onClick={() => setTab('report')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
               <AlertCircle size={14} />
               <span>Report Fault on Bench</span>
@@ -543,10 +568,15 @@ export default function HomePage({ assets, setTab, onSelectAsset, onTicketDelete
             </div>
           </div>
 
-          <button onClick={() => setTab('triage')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
-            <Wrench size={14} />
-            <span>Open Triage Workbench &rarr;</span>
-          </button>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button onClick={() => setTab('home')} className="btn-secondary" style={{ fontSize: '0.8rem' }}>
+              &larr; Portal Home
+            </button>
+            <button onClick={() => setTab('triage')} className="btn-primary" style={{ fontSize: '0.8rem' }}>
+              <Wrench size={14} />
+              <span>Open Triage Workbench &rarr;</span>
+            </button>
+          </div>
         </div>
 
         {/* SLA Telemetry Metric Cards */}
@@ -843,6 +873,9 @@ export default function HomePage({ assets, setTab, onSelectAsset, onTicketDelete
           </div>
 
           <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button onClick={() => setTab('home')} className="btn-secondary" style={{ fontSize: '0.8rem' }}>
+              &larr; Portal Home
+            </button>
             <button
               onClick={handleExportCSV}
               className="btn-secondary"
@@ -1398,16 +1431,37 @@ export default function HomePage({ assets, setTab, onSelectAsset, onTicketDelete
                         )}
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <button
-                          onClick={() => {
-                            onSelectAsset(asset);
-                            setTab('report');
-                          }}
-                          className="btn-secondary"
-                          style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}
-                        >
-                          Report &rarr;
-                        </button>
+                        <div style={{ display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
+                          <button
+                            onClick={() => {
+                              onSelectAsset(asset);
+                              setTab('report');
+                            }}
+                            className="btn-secondary"
+                            style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}
+                          >
+                            Report &rarr;
+                          </button>
+                          {(user?.role === 'technician' || user?.role === 'admin') && (
+                            <button
+                              onClick={() => handleDeleteAsset(asset)}
+                              title="Decommission & delete hardware asset"
+                              style={{
+                                background: '#fee2e2',
+                                color: '#b91c1c',
+                                border: '1px solid #fecaca',
+                                borderRadius: '4px',
+                                padding: '0.2rem 0.35rem',
+                                fontSize: '0.72rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

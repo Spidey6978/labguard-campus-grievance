@@ -99,4 +99,32 @@ router.post('/', protect, authorize('admin', 'technician'), async (req, res) => 
   }
 });
 
+// @route   DELETE /api/assets/:id
+// @desc    Decommission and permanently delete an asset record (Admin/Technician only)
+router.delete('/:id', protect, authorize('admin', 'technician'), async (req, res) => {
+  try {
+    const asset = await Asset.findById(req.params.id);
+    if (!asset) {
+      return res.status(404).json({ success: false, message: 'Asset not found in registry.' });
+    }
+
+    const assetTag = asset.assetTag;
+    const assetName = asset.name;
+
+    // Purge or detach any tickets linked to this decommissioned asset
+    const deletedTickets = await Ticket.deleteMany({ asset: asset._id });
+
+    await Asset.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: `Asset '${assetTag}' (${assetName}) successfully decommissioned and removed from registry. ${deletedTickets.deletedCount} associated ticket records purged.`,
+      assetId: req.params.id,
+      assetTag,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;

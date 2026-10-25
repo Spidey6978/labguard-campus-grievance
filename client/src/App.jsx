@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ReportGrievancePage from './pages/ReportGrievancePage.jsx';
 import AssetDirectoryPage from './pages/AssetDirectoryPage.jsx';
@@ -41,11 +42,20 @@ function MainApp() {
 
       <main className="main-content">
         {currentTab === 'home' && (
+          <LandingPage
+            assets={assets}
+            setTab={setCurrentTab}
+            onSelectAsset={handleReportFaultOnAsset}
+          />
+        )}
+
+        {currentTab === 'workbench' && (
           <HomePage
             assets={assets}
             setTab={setCurrentTab}
             onSelectAsset={handleReportFaultOnAsset}
             onTicketDeleted={loadAssets}
+            onAssetDeleted={loadAssets}
           />
         )}
 
@@ -64,6 +74,7 @@ function MainApp() {
           <AssetDirectoryPage
             assets={assets}
             onReportFault={handleReportFaultOnAsset}
+            onAssetDeleted={loadAssets}
           />
         )}
 
@@ -71,6 +82,7 @@ function MainApp() {
           <MyTicketsPage
             setTab={setCurrentTab}
             onReportClick={() => setCurrentTab('report')}
+            onTicketDeleted={loadAssets}
           />
         )}
 

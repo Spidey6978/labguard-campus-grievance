@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import AssetCard from '../components/AssetCard.jsx';
 import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '../context/AuthContext.jsx';
+import { apiRequest, playSound } from '../utils/api.js';
 import {
   Cpu,
   Search,
@@ -8,13 +10,18 @@ import {
   Printer,
   X,
   Wrench,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 
-export default function AssetDirectoryPage({ assets, onReportFault }) {
+export default function AssetDirectoryPage({ assets, onReportFault, onAssetDeleted }) {
+  const { user, isTechnician, isAdmin } = useAuth();
   const [selectedRoom, setSelectedRoom] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [qrModalAsset, setQrModalAsset] = useState(null);
+  const [deletingAsset, setDeletingAsset] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const rooms = [
     'All',
@@ -26,6 +33,25 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
   ];
 
   const categories = ['All', 'Workstation', 'Networking', 'AV & Projector', 'Lab Hardware', 'Electrical / UPS'];
+
+  const handleDeleteAsset = async () => {
+    if (!deletingAsset) return;
+    setIsDeleting(true);
+    try {
+      const res = await apiRequest(`/assets/${deletingAsset._id}`, {
+        method: 'DELETE',
+      });
+      if (res.success) {
+        playSound('success');
+        if (onAssetDeleted) onAssetDeleted();
+        setDeletingAsset(null);
+      }
+    } catch (err) {
+      alert(`Failed to delete asset record: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const filteredAssets = assets.filter((a) => {
     const matchesRoom = selectedRoom === 'All' || a.labRoom === selectedRoom;
@@ -141,9 +167,102 @@ export default function AssetDirectoryPage({ assets, onReportFault }) {
             asset={asset}
             onViewQR={(a) => setQrModalAsset(a)}
             onReportFault={onReportFault}
+            onDeleteAsset={(isTechnician || isAdmin) ? (a) => setDeletingAsset(a) : null}
           />
         ))}
       </div>
+
+      {/* Decommission & Delete Asset Confirmation Modal */}
+      {deletingAsset && (
+        <div className="modal-overlay" onClick={() => !isDeleting && setDeletingAsset(null)}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '440px' }}>
+            <div
+              style={{
+                padding: '0.9rem 1.15rem',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <AlertTriangle size={16} color="#dc2626" />
+                Decommission Equipment Record
+              </h3>
+              <button
+                onClick={() => !isDeleting && setDeletingAsset(null)}
+                style={{ background: 'transparent', color: '#94a3b8' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ padding: '1.25rem' }}>
+              <p style={{ fontSize: '0.84rem', color: '#334155', marginBottom: '0.85rem', lineHeight: 1.5 }}>
+                Are you sure you want to permanently decommission and remove{' '}
+                <strong style={{ fontFamily: 'var(--font-mono)', color: '#0369a1' }}>
+                  {deletingAsset.assetTag}
+                </strong>{' '}
+                from the institutional inventory?
+              </p>
+
+              <div
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  padding: '0.75rem',
+                  fontSize: '0.78rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.2rem' }}>
+                  {deletingAsset.name}
+                </div>
+                <div style={{ color: '#64748b', marginBottom: '0.2rem' }}>
+                  Location: {deletingAsset.labRoom} &bull; Category: {deletingAsset.category}
+                </div>
+                <div style={{ color: '#b91c1c', fontSize: '0.74rem', marginTop: '0.35rem', fontWeight: 500 }}>
+                  ⚠️ This action is irreversible. All linked active and historical incident tickets ({deletingAsset.activeTickets || 0} active) will be permanently purged.
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setDeletingAsset(null)}
+                  disabled={isDeleting}
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteAsset}
+                  disabled={isDeleting}
+                  style={{
+                    background: '#dc2626',
+                    color: '#ffffff',
+                    border: '1px solid #b91c1c',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                  }}
+                >
+                  <Trash2 size={13} />
+                  <span>{isDeleting ? 'Decommissioning...' : 'Confirm Decommission'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bench QR Sticker Modal */}
       {qrModalAsset && (

@@ -46,8 +46,13 @@ In engineering colleges, computer labs, embedded workshops, and smart seminar ha
    * Switch role to **HOD Admin** &rarr; Open **HOD Analytics**.
    * Observe Fleet Uptime (94.2%), Average MTTR turnaround (14.5h), and Chronic Lemon assets.
    * Click **Export NBA Audit CSV Log** &rarr; Downloads official CSV spreadsheet instantly for evaluation files.
-4. **Bench QR Tag Inspection:**
-   * Go to **Asset Registry & QR** &rarr; Click **Bench QR** on any workstation to view the printable laboratory asset sticker with live dynamic QR code.
+4. **Bench QR Tag Inspection & Live Radar:**
+   * Go to **Portal Home** &rarr; Check **Live Bench Health Radar** to verify workstation health before entering a lab batch.
+   * Go to **Asset Registry** &rarr; Click **QR Tag** on any workstation to view the printable laboratory asset sticker with live dynamic QR code.
+5. **Record Deletion & Decommissioning Flow:**
+   * **Student Grievance Withdrawal:** Go to **My Tickets** &rarr; On any ticket in `Reported` status, click **Withdraw** &rarr; Confirm in modal &rarr; Ticket is permanently purged from the triage queue and workstation status is restored.
+   * **Hardware Decommissioning (Admin/Tech):** Switch to **Lab Technician** or **HOD Admin** &rarr; Open **Asset Registry** &rarr; Click the red **Trash icon** on any workstation card &rarr; Confirm decommission in modal &rarr; Permanently removes hardware record and purges all associated ticket history.
+
 
 ---
 

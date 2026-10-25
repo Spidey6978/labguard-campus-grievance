@@ -94,10 +94,28 @@ export default function Navbar({ currentTab, setTab }) {
               padding: '0.3rem 0.65rem',
               borderRadius: '5px',
               background: currentTab === 'home' ? '#1e293b' : 'transparent',
-              color: currentTab === 'home' ? '#f8fafc' : '#94a3b8',
-              fontWeight: currentTab === 'home' ? 600 : 500,
+              color: currentTab === 'home' ? '#38bdf8' : '#94a3b8',
+              fontWeight: currentTab === 'home' ? 700 : 500,
               fontSize: '0.82rem',
-              border: currentTab === 'home' ? '1px solid #334155' : '1px solid transparent',
+              border: currentTab === 'home' ? '1px solid #0284c7' : '1px solid transparent',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+            }}
+          >
+            <span>Portal Home</span>
+          </button>
+
+          <button
+            onClick={() => setTab('workbench')}
+            style={{
+              padding: '0.3rem 0.65rem',
+              borderRadius: '5px',
+              background: currentTab === 'workbench' ? '#1e293b' : 'transparent',
+              color: currentTab === 'workbench' ? '#f8fafc' : '#94a3b8',
+              fontWeight: currentTab === 'workbench' ? 600 : 500,
+              fontSize: '0.82rem',
+              border: currentTab === 'workbench' ? '1px solid #334155' : '1px solid transparent',
             }}
           >
             Workbench
